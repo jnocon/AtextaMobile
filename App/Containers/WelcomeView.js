@@ -12,13 +12,14 @@ import { Actions as NavigationActions } from 'react-native-router-flux'
 
 import Auth0Lock from 'react-native-lock';
 
-export default class WelcomeView extends Component {
+class WelcomeView extends Component {
   constructor(props) {
   super(props) 
 
 }
 
 _onLogin = () => {
+  var context = this;
   let lock = new Auth0Lock({
   clientId: "HFYDMTRU6gcORtnREZaFudRLO0f1FSwM",
   domain: "rakan.auth0.com"
@@ -31,15 +32,28 @@ _onLogin = () => {
         console.log(err);
         return;
       }
-      console.log('success')
-    //   this.props.navigator.push({
-    //     name: 'Profile',
-    //     passProps: {
-    //       profile: profile,
-    //       token: token,
-    //     }
-    //   });
+      console.log('profile = ', profile)
+      console.log('token = ', token)
+    context.getUserId(token.accessToken)
+    .then(result => result.json())
+    .then(result => {
+      console.log('user result = ', result)
+    })
+    .catch(error => {
+      console.log('error in user result = ', error)
+    })
     });
+  }
+
+  getUserId = (token) => {
+      return fetch('http://192.168.1.227:3000/auth/login', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({'token': token})
+      })
   }
 
   render() {
@@ -109,3 +123,4 @@ var styles = StyleSheet.create({
   },
 });
 
+export default WelcomeView
