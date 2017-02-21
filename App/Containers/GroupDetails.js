@@ -43,9 +43,10 @@ class GroupDetails extends React.Component {
 
   constructor (props) {
     super(props)
+    console.log("props in groupDetails = ", this.props)
     this.state = {
-      groupName: null,
-      method: null,
+      groupName: this.props.group ? this.props.group.name : null,
+      method: this.props.group ? this.props.group.mediumType : null,
       visibleHeight: Metrics.screenHeight,
       topLogo: { width: Metrics.screenWidth }
     }
@@ -112,7 +113,7 @@ class GroupDetails extends React.Component {
     const editable = !fetching
     const textInputStyle = editable ? Styles.textInput : Styles.textInputReadonly
     return (
-      <ScrollView contentContainerStyle={{justifyContent: 'center'}} style={[Styles.container, {height: this.state.visibleHeight}]} keyboardShouldPersistTaps>
+      <ScrollView contentContainerStyle={{justifyContent: 'center'}} style={[Styles.container, {height: this.state.visibleHeight}]} keyboardShouldPersistTaps="always">
         <View style={Styles.form}>
           <View style={Styles.row}>
             <Text style={Styles.rowLabel}>{I18n.t('GroupName')}</Text>
@@ -170,13 +171,13 @@ class GroupDetails extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    // fetching: state.login.fetching
+    group: state.group.group
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    // attemptLogin: (groupName, method) => dispatch(LoginActions.loginRequest(groupName, method))
+    // attemptLogin: (messageName, method) => dispatch(LoginActions.loginRequest(messageName, method))
   }
 }
 

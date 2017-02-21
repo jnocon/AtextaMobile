@@ -5,6 +5,7 @@ import { View, Text, ListView, TouchableOpacity } from 'react-native'
 import { connect } from 'react-redux'
 import RoundedButton from '../Components/RoundedButton'
 import { Actions as NavigationActions } from 'react-native-router-flux'
+import GroupDetailActions from '../Redux/GroupDetailRedux'
 
 // For empty lists
 import AlertMessage from '../Components/AlertMessage'
@@ -25,11 +26,11 @@ class GroupsList extends React.Component {
     * This is an array of objects with the properties you desire
     * Usually this should come from Redux mapStateToProps
     *************************************************************/
-    const dataObjects = [
-      {title: 'All Students', description: 'Slack'},
-      {title: "HIR's", description: 'Email'},
-      {title: 'Ricky and Serge', description: 'Text'}
-    ]
+    // const dataObjects = [
+    //   {title: 'All Students', description: 'Slack'},
+    //   {title: "HIR's", description: 'Email'},
+    //   {title: 'Ricky and Serge', description: 'Text'}
+    // ]
 
     /* ***********************************************************
     * STEP 2
@@ -44,7 +45,7 @@ class GroupsList extends React.Component {
 
     // Datasource is always in state
     this.state = {
-      dataSource: ds.cloneWithRows(dataObjects)
+      dataSource: ds.cloneWithRows(this.props.groups)
     }
   }
 
@@ -58,11 +59,9 @@ class GroupsList extends React.Component {
   *************************************************************/
   renderRow (rowData) {
     return (
-      <TouchableOpacity onPress={NavigationActions.groupDetails}>
-        <View style={styles.row}>
-          <Text style={styles.boldLabel}>{rowData.title}</Text>
-          <Text style={styles.label}>{rowData.description}</Text>
-        </View>
+      <TouchableOpacity onPress={() => this.clickGroup(rowData)} style={styles.row}>
+        <Text style={styles.boldLabel}>{rowData.name}</Text>
+        <Text style={styles.label}>{rowData.mediumType}</Text>
       </TouchableOpacity>
     )
   }
@@ -91,6 +90,17 @@ class GroupsList extends React.Component {
     return this.state.dataSource.getRowCount() === 0
   }
 
+  clickGroup (group) {
+      console.log("hi jesse= ", group)
+      this.props.setGroup(group)
+      NavigationActions.groupDetails()
+    }
+  
+  createNewGroup () {
+    this.props.setGroup(undefined)
+    NavigationActions.groupDetails()
+  }
+
   render () {
     return (
       <View style={styles.container}>
@@ -98,10 +108,10 @@ class GroupsList extends React.Component {
         <ListView
           contentContainerStyle={styles.listContent}
           dataSource={this.state.dataSource}
-          renderRow={this.renderRow}
+          renderRow={this.renderRow.bind(this)}
           pageSize={15}
         />
-        <RoundedButton onPress={NavigationActions.groupDetails}>
+        <RoundedButton onPress={this.createNewGroup.bind(this)}>
            Create New Group
         </RoundedButton>
       </View>
@@ -111,8 +121,14 @@ class GroupsList extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    // ...redux state to props here
+    groups: state.login.groups
   }
 }
 
-export default connect(mapStateToProps)(GroupsList)
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setGroup: (group) => dispatch(GroupDetailActions.setGroup(group))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(GroupsList)
