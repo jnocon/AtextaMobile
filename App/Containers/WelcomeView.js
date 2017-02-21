@@ -21,13 +21,6 @@ class WelcomeView extends Component {
 
 }
 
-componentWillReceiveProps = (nextProps) => {
-
-  if (nextProps.userId) {
-        NavigationActions.presentationScreen()
-      }
-}
-
 _onLogin = () => {
   var context = this;
   let lock = new Auth0Lock({
@@ -45,7 +38,9 @@ _onLogin = () => {
     context.getUserId(token.accessToken)
     .then(result => result.json())
     .then(result => {
-      context.props.setUserId(result)
+      console.log('result from auth is', result)
+      console.log(this.props)
+      this.props.setUserData(result.userId, result.userCommands, result.userGroups, result.token, true)
     })
     .catch(error => {
       console.log('error in user result = ', error)
@@ -126,13 +121,14 @@ var styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
   return {
-    userId: state.login.userId
+    userId: state.login.userId,
+    messages: state.login.messages
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-   setUserId: userId => dispatch(LoginActions.setUserId(userId))
+   setUserData: (userId, messages, groups, token, loggedIn) => dispatch(LoginActions.setUserData(userId, messages, groups, token, loggedIn))
   }
 }
 

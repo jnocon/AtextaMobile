@@ -40,8 +40,7 @@ export default class NavigationRouter extends Component {
       <Router>
         <Scene key='drawer' component={NavigationDrawer} open={false}>
           <Scene key='drawerChildrenWrapper' navigationBarStyle={Styles.navBar} titleStyle={Styles.title} leftButtonIconStyle={Styles.leftButton} rightButtonTextStyle={Styles.rightButton}>
-            <Scene initial key='auth0' component={WelcomeView} title='Login' />
-            <Scene key='presentationScreen' component={PresentationScreen} title='Atexta' renderLeftButton={NavItems.hamburgerButton} />
+            <Scene initial key='presentationScreen' component={PresentationScreen} title='Atexta' />
             <Scene key='groupsList' component={GroupsList} title='Groups' />
             <Scene key='messagesList' component={MessagesList} title='Messages' />
             <Scene key='componentExamples' component={AllComponentsScreen} title='Components' />
