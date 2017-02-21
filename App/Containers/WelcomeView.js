@@ -8,6 +8,9 @@ import {
   TouchableOpacity
 } from 'react-native';
 
+import { connect } from 'react-redux'
+import LoginActions from '../Redux/AuthRedux'
+
 import { Actions as NavigationActions } from 'react-native-router-flux'
 
 import Auth0Lock from 'react-native-lock';
@@ -16,6 +19,13 @@ class WelcomeView extends Component {
   constructor(props) {
   super(props) 
 
+}
+
+componentWillReceiveProps = (nextProps) => {
+
+  if (nextProps.userId) {
+        NavigationActions.presentationScreen()
+      }
 }
 
 _onLogin = () => {
@@ -32,12 +42,10 @@ _onLogin = () => {
         console.log(err);
         return;
       }
-      console.log('profile = ', profile)
-      console.log('token = ', token)
     context.getUserId(token.accessToken)
     .then(result => result.json())
     .then(result => {
-      console.log('user result = ', result)
+      context.props.setUserId(result)
     })
     .catch(error => {
       console.log('error in user result = ', error)
@@ -68,13 +76,6 @@ _onLogin = () => {
           underlayColor='#949494'
           onPress={this._onLogin}>
           <Text>Log In</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.signInButton}
-          underlayColor='#949494'
-          onPress={NavigationActions.presentationScreen}>
-          <Text>Bypass</Text>
         </TouchableOpacity>
       </View>
     );
@@ -123,4 +124,17 @@ var styles = StyleSheet.create({
   },
 });
 
-export default WelcomeView
+const mapStateToProps = (state) => {
+  return {
+    userId: state.login.userId
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+   setUserId: userId => dispatch(LoginActions.setUserId(userId))
+  }
+}
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(WelcomeView)
