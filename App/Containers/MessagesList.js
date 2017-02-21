@@ -64,7 +64,7 @@ class MessagesList extends React.Component {
     const ds = new ListView.DataSource({rowHasChanged, sectionHeaderHasChanged})
     // Datasource is always in state
     this.state = {
-      dataSource: ds.cloneWithRowsAndSections({Text: this.props.messages})
+      dataSource: ds.cloneWithRowsAndSections(this.props.messages)
     }
   }
 
@@ -128,9 +128,38 @@ class MessagesList extends React.Component {
     
   *************************************************************/
 componentWillReceiveProps (newProps) {
-  console.log("is messages props changing?", newProps)
-      if (newProps.messages) {
-        let data = {Texts: newProps.messages}
+      if (Array.isArray(newProps.messages)) {
+        console.log("is messages props changing?", newProps)
+        let textArr = []
+        let slackArr = []
+        let emailArr = []
+        let blankArr = []
+        for (let el of newProps.messages) {
+     console.log('element in reducerMesssages = ', el)
+          if (el.mediumType === "T") {
+            textArr.push(el)
+          } else if (el.mediumType === "S") {
+            slackArr.push(el)
+          } else if (el.mediumType === "E") {
+            emailArr.push(el)
+          } else if (el.mediumType === null) {
+            blankArr.push(el)
+          }
+        }
+   let data = {}
+        if (textArr.length !== 0 ) {
+          data.Texts = textArr
+        }
+        if (emailArr.length !== 0 ) {
+          data.Emails = emailArr
+        }
+        if (slackArr.length !== 0 ) {
+          data.Slacks = slackArr
+        }
+        if (blankArr.length !== 0 ) {
+          data.Blank = blankArr
+        }
+    console.log('data in reducerMesssages= ', data)
         this.setState({
           dataSource: this.state.dataSource.cloneWithRowsAndSections(data)
         })
@@ -150,11 +179,11 @@ componentWillReceiveProps (newProps) {
 
   renderHeader (data, sectionID) {
     switch (sectionID) {
-      case 'Text':
+      case 'Texts':
         return <Text style={styles.boldLabel}>Texts</Text>
-      case 'Email':
+      case 'Emails':
         return <Text style={styles.boldLabel}>Emails</Text>
-      case 'Slack':
+      case 'Slacks':
         return <Text style={styles.boldLabel}>Slack</Text>
       default:
         return <Text style={styles.boldLabel}>Miscellaneous</Text>
@@ -190,9 +219,39 @@ componentWillReceiveProps (newProps) {
 }
 
 const mapStateToProps = (state) => {
-  //logic to seperate out messages here
+        var textArr = []
+        var slackArr = []
+        var emailArr = []
+        var blankArr = []
+   for (let el of state.login.messages) {
+     console.log('element in reducerMesssages = ', el)
+          if (el.mediumType === "T") {
+            textArr.push(el)
+          } else if (el.mediumType === "S") {
+            slackArr.push(el)
+          } else if (el.mediumType === "E") {
+            emailArr.push(el)
+          } else if (el.mediumType === null) {
+            blankArr.push(el)
+          }
+        }
+        let data = {}
+        if (textArr.length !== 0 ) {
+          data.Texts = textArr
+        }
+        if (emailArr.length !== 0 ) {
+          data.Emails = emailArr
+        }
+        if (slackArr.length !== 0 ) {
+          data.Slacks = slackArr
+        }
+        if (blankArr.length !== 0 ) {
+          data.Blank = blankArr
+        }
+    
+    console.log('data in reducerMesssages= ', data)
   return {
-    messages: state.login.messages
+    messages: data
   }
 }
 

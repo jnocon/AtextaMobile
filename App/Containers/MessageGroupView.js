@@ -25,9 +25,9 @@ class MessageGroupView extends React.Component {
     * This is an array of objects with the properties you desire
     * Usually this should come from Redux mapStateToProps
     *************************************************************/
-    const dataObjects = [
-      {title: 'All Students', description: 'Slack'}
-    ]
+    // const dataObjects = [
+    //   {title: 'All Students', description: 'Slack'}
+    // ]
 
     /* ***********************************************************
     * STEP 2
@@ -42,7 +42,7 @@ class MessageGroupView extends React.Component {
 
     // Datasource is always in state
     this.state = {
-      dataSource: ds.cloneWithRows(dataObjects)
+      dataSource: ds.cloneWithRows(this.props.message)
     }
   }
 
@@ -58,8 +58,8 @@ class MessageGroupView extends React.Component {
     return (
       <TouchableOpacity onPress={NavigationActions.groupDetails}>
         <View style={styles.row}>
-          <Text style={styles.boldLabel}>{rowData.title}</Text>
-          <Text style={styles.label}>{rowData.description}</Text>
+          <Text style={styles.boldLabel}>{rowData.groupName}</Text>
+          <Text style={styles.label}>{rowData.mediumType}</Text>
         </View>
       </TouchableOpacity>
     )
@@ -92,7 +92,6 @@ class MessageGroupView extends React.Component {
   render () {
     return (
       <View style={styles.container}>
-        <AlertMessage title='Click The Button Below to Create a group!' show={this.noRowData()} />
         <ListView
           contentContainerStyle={styles.listContent}
           dataSource={this.state.dataSource}
@@ -108,8 +107,12 @@ class MessageGroupView extends React.Component {
 }
 
 const mapStateToProps = (state) => {
+  let messageArr = [state.message.message]
+  if (state.message.message.groupId === null) {
+    messageArr = []
+  } 
   return {
-    // ...redux state to props here
+    message: messageArr
   }
 }
 

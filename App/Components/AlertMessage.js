@@ -5,7 +5,7 @@ import { View, Text } from 'react-native'
 import styles from './Styles/AlertMessageStyle'
 import * as Animatable from 'react-native-animatable'
 import { Metrics } from '../Themes/'
-import Icon from 'react-native-vector-icons/Ionicons'
+import Icon from 'react-native-vector-icons'
 import ExamplesRegistry from '../Services/ExamplesRegistry'
 
 // Example
