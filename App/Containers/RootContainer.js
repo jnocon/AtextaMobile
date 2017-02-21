@@ -22,9 +22,11 @@ class RootContainer extends Component {
 
   componentWillReceiveProps (newProps) {
     console.log('thisBeFiring?', newProps)
-    this.setState({
-      loggedIn: newProps.loggedIn
-    })
+    if (newProps.loggedIn) {
+      this.setState({
+        loggedIn: newProps.loggedIn
+      })
+    }
   }
 
   componentDidMount () {

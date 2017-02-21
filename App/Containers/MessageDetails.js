@@ -34,7 +34,6 @@ class MessageDetails extends React.Component {
 //     }
 //   }
 
-  isAttempting: boolean
   keyboardDidShowListener: Object
   keyboardDidHideListener: Object
 
@@ -43,21 +42,13 @@ class MessageDetails extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      messageName: null,
-      method: null,
+      messageName: this.props.message ? this.props.message.commandName : null,
+      method: this.props.message ? this.props.message.text : null,
       visibleHeight: Metrics.screenHeight,
       topLogo: { width: Metrics.screenWidth }
     }
-    this.isAttempting = false
   }
 
-  componentWillReceiveProps (newProps) {
-    this.forceUpdate()
-    // Did the login attempt complete?
-    if (this.isAttempting && !newProps.fetching) {
-      NavigationActions.pop()
-    }
-  }
 
   componentWillMount () {
     // Using keyboardWillShow/Hide looks 1,000 times better, but doesn't work on Android
@@ -69,6 +60,11 @@ class MessageDetails extends React.Component {
   componentWillUnmount () {
     this.keyboardDidShowListener.remove()
     this.keyboardDidHideListener.remove()
+  }
+
+  componentDidMount () {
+    mapStateToProps
+    console.log('hi jesse', this.props)
   }
 
   keyboardDidShow = (e) => {
@@ -111,7 +107,7 @@ class MessageDetails extends React.Component {
     const editable = !fetching
     const textInputStyle = editable ? Styles.textInput : Styles.textInputReadonly
     return (
-      <ScrollView contentContainerStyle={{justifyContent: 'center'}} style={[Styles.container, {height: this.state.visibleHeight}]} keyboardShouldPersistTaps>
+      <ScrollView contentContainerStyle={{justifyContent: 'center'}} style={[Styles.container, {height: this.state.visibleHeight}]} keyboardShouldPersistTaps="always">
         <View style={Styles.form}>
           <View style={Styles.row}>
             <Text style={Styles.rowLabel}>Message Name</Text>
@@ -186,7 +182,7 @@ class MessageDetails extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    // fetching: state.login.fetching
+    message: state.message.message
   }
 }
 
