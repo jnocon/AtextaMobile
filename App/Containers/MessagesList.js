@@ -26,27 +26,29 @@ class MessagesList extends React.Component {
     * This is an array of objects with the properties you desire
     * Usually this should come from Redux mapStateToProps
     *************************************************************/
-    const dataObjects = {
-      Text: [
-        {title: 'First Title', groupName: 'First Group Name', description: 'First Description'},
-        {title: 'First Title', groupName: 'Second Group Name', description: 'Second Description'},
-        {title: 'First Title', groupName: 'Third Group Name', description: 'Third Description'},
-        {title: 'First Title', groupName: 'Fourth Group Name', description: 'Fourth Description'}
-      ],
-      Email: [
-       {title: 'First Title', groupName: 'First Group Name', description: 'First Description'},
-        {title: 'First Title', groupName: 'Second Group Name', description: 'Second Description'},
-        {title: 'First Title', groupName: 'Third Group Name', description: 'Third Description'},
-        {title: 'First Title', groupName: 'Fourth Group Name', description: 'Fourth Description'}
-      ],
-      Slack: [
-        {title: 'First Title', groupName: 'First Group Name', description: 'First Description'},
-        {title: 'First Title', groupName: 'Second Group Name', description: 'Second Description'},
-        {title: 'First Title', groupName: 'Third Group Name', description: 'Third Description'},
-        {title: 'First Title', groupName: 'Fourth Group Name', description: 'Fourth Description'},
-        {title: 'BLACKJACK!', groupName: 'BLACKJACK! Group Name', description: 'BLACKJACK! Description'}
-      ]
-    }
+    // const dataObjects = {
+    //   Text: [
+    //     {commandName: 'First commandName', groupName: 'First Group Name', text: 'First text'},
+    //     {commandName: 'First commandName', groupName: 'Second Group Name', text: 'Second text'},
+    //     {commandName: 'First commandName', groupName: 'Third Group Name', text: 'Third text'},
+    //     {commandName: 'First commandName', groupName: 'Fourth Group Name', text: 'Fourth text'}
+    //   ],
+    //   Email: [
+    //    {commandName: 'First commandName', groupName: 'First Group Name', text: 'First text'},
+    //     {commandName: 'First commandName', groupName: 'Second Group Name', text: 'Second text'},
+    //     {commandName: 'First commandName', groupName: 'Third Group Name', text: 'Third text'},
+    //     {commandName: 'First commandName', groupName: 'Fourth Group Name', text: 'Fourth text'}
+    //   ],
+    //   Slack: [
+    //     {commandName: 'First commandName', groupName: 'First Group Name', text: 'First text'},
+    //     {commandName: 'First commandName', groupName: 'Second Group Name', text: 'Second text'},
+    //     {commandName: 'First commandName', groupName: 'Third Group Name', text: 'Third text'},
+    //     {commandName: 'First commandName', groupName: 'Fourth Group Name', text: 'Fourth text'},
+    //     {commandName: 'BLACKJACK!', groupName: 'BLACKJACK! Group Name', text: 'BLACKJACK! Description'}
+    //   ]
+    // }
+
+    
     /* ***********************************************************
     * STEP 2
     * Teach datasource how to detect if rows are different
@@ -62,9 +64,42 @@ class MessagesList extends React.Component {
 
     // Datasource is always in state
     this.state = {
-      dataSource: ds.cloneWithRowsAndSections(dataObjects)
+      dataSource: ds.cloneWithRowsAndSections([])
     }
   }
+
+  componentDidMount = () => {
+    console.log('CDM messagesList')
+      this.getMessages(this.props.userId)
+      .then(result => {
+        console.log('messageslist = ', result)
+        var res = result
+        return res.json()
+      })
+      .then(result => {
+        console.log('messages list = ', result)
+        var data = {
+          Text: result
+        }
+        this.setState({
+          dataSource: this.state.dataSource.cloneWithRowsAndSections(data)
+        })
+      })
+      .catch(error => {
+        console.log("error in messagesListGet = ", error)
+      })
+    }
+
+    getMessages = (userId) => {
+      return fetch('http://192.168.1.227:3000/command/userCommands/' + userId, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+      
+      })
+    }
 
   /* ***********************************************************
   * STEP 3
@@ -80,9 +115,8 @@ class MessagesList extends React.Component {
     return (
       <TouchableOpacity onPress={NavigationActions.messageDetails}>
         <View style={styles.row}>
-          <Text style={styles.boldLabel}>{sectionID} - {rowData.title}</Text>
-          <Text style={styles.label}>{rowData.groupName}</Text>
-          <Text style={styles.label}>{rowData.description}</Text>
+          <Text style={styles.boldLabel}>{sectionID} - {rowData.commandName}</Text>
+          <Text style={styles.label}>{rowData.text}</Text>
         </View>
       </TouchableOpacity>
     )
@@ -128,7 +162,6 @@ class MessagesList extends React.Component {
   render () {
     return (
       <View style={styles.container}>
-        <AlertMessage title='Nothing to See Here, Move Along' show={this.noRowData()} />
         <ListView
           renderSectionHeader={this.renderHeader}
           contentContainerStyle={styles.listContent}
@@ -149,7 +182,7 @@ class MessagesList extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    // ...redux state to props here
+    userId: state.login.userId
   }
 }
 
