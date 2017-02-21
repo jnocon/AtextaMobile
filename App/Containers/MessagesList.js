@@ -5,6 +5,7 @@ import { View, ListView, Text, TouchableOpacity } from 'react-native'
 import { connect } from 'react-redux'
 import RoundedButton from '../Components/RoundedButton'
 import { Actions as NavigationActions } from 'react-native-router-flux'
+import MessageDetailActions from '../Redux/MessageDetailRedux'
 
 // For empty lists
 import AlertMessage from '../Components/AlertMessage'
@@ -61,36 +62,35 @@ class MessagesList extends React.Component {
 
     // DataSource configured
     const ds = new ListView.DataSource({rowHasChanged, sectionHeaderHasChanged})
-
     // Datasource is always in state
     this.state = {
-      dataSource: ds.cloneWithRowsAndSections([])
+      dataSource: ds.cloneWithRowsAndSections({Text: this.props.messages})
     }
   }
 
-  componentDidMount = () => {
-    console.log('CDM messagesList')
-      this.getMessages(this.props.userId)
-      .then(result => {
-        console.log('messageslist = ', result)
-        var res = result
-        return res.json()
-      })
-      .then(result => {
-        console.log('messages list = ', result)
-        var data = {
-          Text: result
-        }
-        this.setState({
-          dataSource: this.state.dataSource.cloneWithRowsAndSections(data)
-        })
-      })
-      .catch(error => {
-        console.log("error in messagesListGet = ", error)
-      })
-    }
+  // componentDidMount = () => {
+  //   console.log('CDM messagesList')
+  //     this.getMessages(this.props.userId)
+  //     .then(result => {
+  //       console.log('messageslist = ', result)
+  //       var res = result
+  //       return res.json()
+  //     })
+  //     .then(result => {
+  //       console.log('messages list = ', result)
+  //       var data = {
+  //         Text: result
+  //       }
+  //       this.setState({
+  //         dataSource: this.state.dataSource.cloneWithRowsAndSections(data)
+  //       })
+  //     })
+  //     .catch(error => {
+  //       console.log("error in messagesListGet = ", error)
+  //     })
+  //   }
 
-    getMessages = (userId) => {
+    getMessages(userId) {
       return fetch('http://192.168.1.227:3000/command/userCommands/' + userId, {
         method: 'GET',
         headers: {
@@ -101,19 +101,11 @@ class MessagesList extends React.Component {
       })
     }
 
-  /* ***********************************************************
-  * STEP 3
-  * `renderRow` function -How each cell/row should be rendered
-  * It's our best practice to place a single component here:
-  *
-  * e.g.
-    return <MyCustomCell title={rowData.title} description={rowData.description} />
-  *************************************************************/
   renderRow (rowData, sectionID) {
     // You can condition on sectionID (key as string), for different cells
     // in different sections
     return (
-      <TouchableOpacity onPress={NavigationActions.messageDetails}>
+      <TouchableOpacity onPress = {() => this.clickMessage(rowData)}>
         <View style={styles.row}>
           <Text style={styles.boldLabel}>{sectionID} - {rowData.commandName}</Text>
           <Text style={styles.label}>{rowData.text}</Text>
@@ -121,6 +113,8 @@ class MessagesList extends React.Component {
       </TouchableOpacity>
     )
   }
+
+ 
 
   /* ***********************************************************
   * STEP 4
@@ -131,20 +125,28 @@ class MessagesList extends React.Component {
   * state's datasource on newProps.
   *
   * e.g.
-    componentWillReceiveProps (newProps) {
-      if (newProps.someData) {
+    
+  *************************************************************/
+componentWillReceiveProps (newProps) {
+  console.log("is messages props changing?", newProps)
+      if (newProps.messages) {
+        let data = {Texts: newProps.messages}
         this.setState({
-          dataSource: this.state.dataSource.cloneWithRowsAndSections(newProps.someData)
+          dataSource: this.state.dataSource.cloneWithRowsAndSections(data)
         })
       }
     }
-  *************************************************************/
-
   // Used for friendly AlertMessage
   // returns true if the dataSource is empty
   noRowData () {
     return this.state.dataSource.getRowCount() === 0
   }
+
+  clickMessage (message) {
+      console.log("hi jesse= ", message)
+      this.props.setMessage(message)
+      NavigationActions.messageDetails()
+    }
 
   renderHeader (data, sectionID) {
     switch (sectionID) {
@@ -159,6 +161,13 @@ class MessagesList extends React.Component {
     }
   }
 
+  createNewMessage () {
+    this.props.setMessage(undefined)
+    NavigationActions.messageDetails()
+  }
+
+  
+
   render () {
     return (
       <View style={styles.container}>
@@ -166,10 +175,10 @@ class MessagesList extends React.Component {
           renderSectionHeader={this.renderHeader}
           contentContainerStyle={styles.listContent}
           dataSource={this.state.dataSource}
-          renderRow={this.renderRow}
+          renderRow={this.renderRow.bind(this)}
           enableEmptySections
         />
-        <RoundedButton onPress={NavigationActions.messageDetails}>
+        <RoundedButton onPress={this.createNewMessage.bind(this)}>
             Create New Message
         </RoundedButton>
         <RoundedButton onPress={NavigationActions.secretMessageDetails}>
@@ -181,13 +190,15 @@ class MessagesList extends React.Component {
 }
 
 const mapStateToProps = (state) => {
+  //logic to seperate out messages here
   return {
-    userId: state.login.userId
+    messages: state.login.messages
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
+   setMessage: (message) => dispatch(MessageDetailActions.setMessage(message))
   }
 }
 

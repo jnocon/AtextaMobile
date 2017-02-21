@@ -28,7 +28,6 @@ import MessageDetails from '../Containers/MessageDetails'
 import SecretMessageDetails from '../Containers/SecretMessageDetails'
 import GroupChooseView from '../Containers/GroupChooseView'
 import AddressBook from '../Containers/AddressBook'
-import WelcomeView from '../Containers/WelcomeView'
 
 /* **************************
 * Documentation: https://github.com/aksonov/react-native-router-flux
