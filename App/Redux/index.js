@@ -11,7 +11,8 @@ export default () => {
     login: require('./AuthRedux').reducer,
     search: require('./SearchRedux').reducer,
     message: require('./MessageDetailRedux').reducer,
-    group: require('./GroupDetailRedux').reducer
+    group: require('./GroupDetailRedux').reducer,
+    recipient: require('./RecipDetailRedux').reducer
   })
 
   return configureStore(rootReducer, rootSaga)

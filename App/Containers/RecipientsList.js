@@ -7,6 +7,7 @@ import RoundedButton from '../Components/RoundedButton'
 import { Actions as NavigationActions } from 'react-native-router-flux'
 // For empty lists
 import AlertMessage from '../Components/AlertMessage'
+import RecipDetailActions from '../Redux/RecipDetailRedux'
 // Styles
 import styles from './Styles/ListviewExampleStyle'
 
@@ -27,15 +28,15 @@ class RecipientsList extends React.Component {
     // DataSource configured
     const ds = new ListView.DataSource({rowHasChanged})
 
-    const dataObjects = [
-        {name: 'Daniel'},
-        {name: 'Jesse'},
-        {name: 'Ricky'},
-        {name: 'Sean'}
-    ]
+    // const dataObjects = [
+    //     {name: 'Daniel'},
+    //     {name: 'Jesse'},
+    //     {name: 'Ricky'},
+    //     {name: 'Sean'}
+    // ]
     // Datasource is always in state
     this.state = {
-      dataSource: ds.cloneWithRows(dataObjects)
+      dataSource: ds.cloneWithRows(this.props.recipients)
     }
   }
 
@@ -46,11 +47,11 @@ class RecipientsList extends React.Component {
   * e.g.
     return <MyCustomCell title={rowData.title} description={rowData.description} />
   *************************************************************/
-  renderRow (recipients) {
+  renderRow (recipient) {
     return (
-      <TouchableOpacity onPress={NavigationActions.recipientDetails}>
+      <TouchableOpacity onPress={() => this.clickRecip(recipient)}>
         <View style={styles.row}>
-          <Text style={styles.boldLabel}>{recipients.name}</Text>
+          <Text style={styles.boldLabel}>{recipient.name}</Text>
         </View>
       </TouchableOpacity>
     )
@@ -79,18 +80,28 @@ class RecipientsList extends React.Component {
     return this.state.dataSource.getRowCount() === 0
   }
 
+  clickRecip (recipient) {
+      console.log("hi jesse= ", recipient)
+      this.props.setRecipient(recipient)
+      NavigationActions.recipientDetails()
+    }
+  
+  createNewRecip () {
+    this.props.setRecipient(undefined)
+    NavigationActions.recipientDetails()
+  }
+
   render () {
     return (
       <View style={styles.container}>
-        <AlertMessage title='Nothing to See Here, Move Along' show={this.noRowData()} />
         <ListView
           contentContainerStyle={styles.listContent}
           dataSource={this.state.dataSource}
-          renderRow={this.renderRow}
+          renderRow={this.renderRow.bind(this)}
           pageSize={15}
           enableEmptySections
         />
-        <RoundedButton onPress={NavigationActions.recipientDetails}>
+        <RoundedButton onPress={this.createNewRecip.bind(this)}>
            Add New Recipient
         </RoundedButton>
         <RoundedButton onPress={NavigationActions.addressBook}>
@@ -102,10 +113,22 @@ class RecipientsList extends React.Component {
 }
 
 const mapStateToProps = (state) => {
+  if (state.group.group) {
+    return {
+      recipients: state.group.group.recipients
+    }
+  } else {
+    return {
+      recipients: []
+    }
+  }
+
+}
+
+const mapDispatchToProps = (dispatch) => {
   return {
-    // searchTerm: state.search.searchTerm,
-    // results: state.search.results
+    setRecipient: (recipient) => dispatch(RecipDetailActions.setRecipient(recipient))
   }
 }
 
-export default connect(mapStateToProps)(RecipientsList)
+export default connect(mapStateToProps, mapDispatchToProps)(RecipientsList)

@@ -45,15 +45,45 @@ class AddressBook extends React.Component {
   * e.g.
     return <MyCustomCell title={rowData.title} description={rowData.description} />
   *************************************************************/
-  renderRow (recipients) {
+  renderRow (rowData) {
     return (
       <TouchableOpacity onPress={NavigationActions.pop}>
         <View style={styles.row}>
-          <Text style={styles.boldLabel}>{recipients.name}</Text>
+          <Text style={styles.boldLabel}>{rowData.name}</Text>
         </View>
       </TouchableOpacity>
     )
   }
+
+  componentDidMount () {
+      this.getAddressBook(this.props.token, this.props.userId, this.props.groupId, this.props.type)
+      .then(result => {
+        console.log('AddressBook = ', result)
+        var res = result
+        return res.json()
+      })
+      .then(result => {
+        console.log('AddressBook = ', result)
+        this.setState({
+          dataSource: this.state.dataSource.cloneWithRows(result)
+        })
+      })
+      .catch(error => {
+        console.log("error in addressBookGet = ", error)
+      })
+    }
+
+    getAddressBook(token, userId, groupId, type) {
+      console.log("hi ricky = ", token, userId, groupId, type)
+      return fetch('http://192.168.1.227:3000/groups/availableRecipients/' + userId + '/' + groupId + '/' + type, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': token
+        }
+      })
+    }
 
   /* ***********************************************************
   * If your datasource is driven by Redux, you'll need to
@@ -81,7 +111,6 @@ class AddressBook extends React.Component {
   render () {
     return (
       <View style={styles.container}>
-        <AlertMessage title='Nothing to See Here, Move Along' show={this.noRowData()} />
         <ListView
           contentContainerStyle={styles.listContent}
           dataSource={this.state.dataSource}
@@ -95,9 +124,19 @@ class AddressBook extends React.Component {
 }
 
 const mapStateToProps = (state) => {
+  let groupNumber = 0;
+  let groupType = 0;
+  if (state.group.group === undefined) {
+    groupType = 'T'
+  } else {
+    groupNumber = state.group.group.groupId
+    groupType = state.group.group.mediumType
+  }
   return {
-    // searchTerm: state.search.searchTerm,
-    // results: state.search.results
+    token: state.login.token,
+    groupId: groupNumber,
+    type: groupType,
+    userId: state.login.userId
   }
 }
 
