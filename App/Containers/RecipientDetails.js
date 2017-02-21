@@ -45,8 +45,8 @@ class RecipientDetails extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      recipientName: null,
-      method: null,
+      recipientName: this.props.recipient ? this.props.recipient.name : null,
+      contactInfo: this.props.recipient ? this.props.recipient.contactInfo : null,
       visibleHeight: Metrics.screenHeight,
       topLogo: { width: Metrics.screenWidth }
     }
@@ -113,7 +113,7 @@ class RecipientDetails extends React.Component {
     const editable = !fetching
     const textInputStyle = editable ? Styles.textInput : Styles.textInputReadonly
     return (
-      <ScrollView contentContainerStyle={{justifyContent: 'center'}} style={[Styles.container, {height: this.state.visibleHeight}]} keyboardShouldPersistTaps>
+      <ScrollView contentContainerStyle={{justifyContent: 'center'}} style={[Styles.container, {height: this.state.visibleHeight}]} keyboardShouldPersistTaps="always">
         <Image source={Images.logo} style={[Styles.topLogo, this.state.topLogo]} />
         <View style={Styles.form}>
           <View style={Styles.row}>
@@ -171,7 +171,7 @@ class RecipientDetails extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    // fetching: state.login.fetching
+    recipient: state.recipient.recipient
   }
 }
 
