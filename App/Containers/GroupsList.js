@@ -86,6 +86,15 @@ class GroupsList extends React.Component {
 
   // Used for friendly AlertMessage
   // returns true if the dataSource is empty
+
+  componentWillReceiveProps (newProps) {
+    if (newProps.groups) {
+      this.setState({
+        dataSource: this.state.dataSource.cloneWithRows(newProps.groups)
+      })
+    }
+}
+
   noRowData () {
     return this.state.dataSource.getRowCount() === 0
   }

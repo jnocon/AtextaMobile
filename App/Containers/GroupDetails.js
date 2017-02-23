@@ -16,6 +16,8 @@ import {Metrics} from '../Themes'
 import { Actions as NavigationActions } from 'react-native-router-flux'
 import I18n from 'react-native-i18n'
 import RecipientsList from './RecipientsList'
+import LoginActions from '../Redux/AuthRedux'
+import Immutable from 'seamless-immutable'
 
 // type GroupDetailsProps = {
 //   dispatch: () => any
@@ -92,11 +94,28 @@ class GroupDetails extends React.Component {
     })
   }
 
-  handleSaveDetails = () => {
-    // const { groupName, method } = this.state
-    // this.isAttempting = true
-    // attempt a login - a saga is listening to pick it up from here.
-    // this.props.attemptLogin(groupName, method)
+ handleSaveDetails = () => {
+    let context = this
+    if (this.props.group) {
+      console.log('hi jesse', this.props.group, this.state.groupName)
+      if ((this.state.groupName === this.props.group.name) === false) {
+        this.updateGroupName(this.props.group.groupId, this.state.groupName)
+        .then(result => result.json())
+        .then(result => {
+          var groups = Immutable.asMutable(context.props.groupsArr, {deep: true})
+          groups.forEach(group => {
+            if (group.groupId === context.props.group.groupId) {
+            group.name = context.state.groupName
+            }
+          })
+          context.props.updateGroupArr(groups)
+        })
+        .catch(error => {
+          console.log('error in update groupName = ', error)
+        })
+      } 
+    }
+    // console.log('hi jesse = ', (this.state.messageName === this.props.message.commandName))
   }
 
   handleChangeGroupName = (text) => {
@@ -107,10 +126,28 @@ class GroupDetails extends React.Component {
     this.setState({ method: text })
   }
 
+  updateGroupName (groupId, newName) {
+    return fetch('http://192.168.1.227:3000/groups/groupName/', {
+      method: 'PUT',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': this.props.token
+      },
+      body: JSON.stringify({
+        'groupId': groupId,
+        'groupName': newName
+      })
+    })
+  }
+
   render () {
     const { groupName, method } = this.state
     const { fetching } = this.props
-    const editable = !fetching
+    let editable = false
+    if (this.state.method) {
+     editable = false
+    }
     const textInputStyle = editable ? Styles.textInput : Styles.textInputReadonly
     return (
       <ScrollView contentContainerStyle={{justifyContent: 'center'}} style={[Styles.container, {height: this.state.visibleHeight}]} keyboardShouldPersistTaps="always">
@@ -121,14 +158,14 @@ class GroupDetails extends React.Component {
               ref='groupName'
               style={textInputStyle}
               value={groupName}
-              editable={editable}
+              editable={true}
               keyboardType='default'
               returnKeyType='next'
               autoCapitalize='none'
               autoCorrect={false}
-              onChangeText={this.handleChangegroupName}
+              onChangeText={this.handleChangeGroupName}
               underlineColorAndroid='transparent'
-              onSubmitEditing={() => this.refs.method.focus()}
+              onSubmitEditing={this.handleSaveDetails}
               placeholder='Put Group Name Here' />
           </View>
 
@@ -143,7 +180,7 @@ class GroupDetails extends React.Component {
               returnKeyType='go'
               autoCapitalize='none'
               autoCorrect={false}
-              onChangeText={this.handleChangemethod}
+              onChangeText={this.handleChangeMethod}
               underlineColorAndroid='transparent'
               onSubmitEditing={this.handleSaveDetails}
               placeholder='Text, Slack, Email' />
@@ -171,13 +208,15 @@ class GroupDetails extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    group: state.group.group
+    group: state.group.group,
+    token: state.login.token,
+    groupsArr: state.login.groups
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    // attemptLogin: (messageName, method) => dispatch(LoginActions.loginRequest(messageName, method))
+    updateGroupArr: (groupArr) => dispatch(LoginActions.updateGroupArr(groupArr))
   }
 }
 
