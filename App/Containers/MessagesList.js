@@ -128,6 +128,7 @@ class MessagesList extends React.Component {
     
   *************************************************************/
 componentWillReceiveProps (newProps) {
+  console.log('newProps in messages List = ', newProps)
   this.setState({
     dataSource: this.state.dataSource.cloneWithRowsAndSections(newProps.messages)
   })
@@ -185,6 +186,7 @@ componentWillReceiveProps (newProps) {
 }
 
 const mapStateToProps = (state) => {
+  console.log("heye jessse = ", state.login.messages) 
         var textArr = []
         var slackArr = []
         var emailArr = []
@@ -196,7 +198,7 @@ const mapStateToProps = (state) => {
             slackArr.push(el)
           } else if (el.mediumType === "E") {
             emailArr.push(el)
-          } else if (el.mediumType === null) {
+          } else {
             blankArr.push(el)
           }
         }

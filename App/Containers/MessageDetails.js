@@ -52,7 +52,6 @@ class MessageDetails extends React.Component {
     }
   }
 
-
   componentWillMount () {
     // Using keyboardWillShow/Hide looks 1,000 times better, but doesn't work on Android
     // TODO: Revisit this if Android begins to support - https://github.com/facebook/react-native/issues/3468
@@ -91,16 +90,18 @@ class MessageDetails extends React.Component {
 
   handleSaveDetails = () => {
     let context = this
+    console.log(this.props.message)
     if (this.props.message) {
-      if ((this.state.messageName === this.props.message.commandName) === false) {
-        console.log('this?')
-        this.updateMessageName(this.props.message.id, this.state.messageName)
+      if (this.props.message.commandName) {
+        if ((this.state.messageName === this.props.message.commandName) === false) {
+          console.log('this?')
+          this.updateMessageName(this.props.message.id, this.state.messageName)
         .then(result => result.json())
         .then(result => {
           var messages = Immutable.asMutable(context.props.messagesArr, {deep: true})
           messages.forEach(message => {
             if (message.id === context.props.message.id) {
-            message.commandName = context.state.messageName
+              message.commandName = context.state.messageName
             }
           })
           context.props.updateMessageArr(messages)
@@ -108,22 +109,23 @@ class MessageDetails extends React.Component {
         .catch(error => {
           console.log('error in update messsageName = ', error)
         })
-      } 
-      if ((this.state.messageText === this.props.message.text) === false) {
-        console.log('or here?')
-        let newMessage = Immutable.asMutable(this.props.message)
-        newMessage.text = this.state.messageText
-        this.updateMessageText(this.props.message.id, newMessage)
+        }
+        if ((this.state.messageText === this.props.message.text) === false) {
+          console.log('or here?')
+          let newMessage = Immutable.asMutable(this.props.message)
+          newMessage.text = this.state.messageText
+          this.updateMessageText(this.props.message.id, newMessage)
         .then(result => {
-          console.log("after updating message = ", result)
+          console.log('after updating message = ', result)
           let res = result
-          return res.json()})
+          return res.json()
+        })
         .then(result => {
-          console.log("after updating message json = ", result)
+          console.log('after updating message json = ', result)
           var messages = Immutable.asMutable(context.props.messagesArr, {deep: true})
           messages.forEach(message => {
             if (message.id === context.props.message.id) {
-            message.text = context.state.messageText
+              message.text = context.state.messageText
             }
           })
           context.props.updateMessageArr(messages)
@@ -131,8 +133,48 @@ class MessageDetails extends React.Component {
         .catch(error => {
           console.log('error in update messsageText = ', error)
         })
+        }
+      } else {
+        console.log(this.props.message)
+        let newMessage = {
+          text: this.state.messageText,
+          additionalContent: null,
+          name: this.state.messageName,
+          userId: this.props.userId,
+          groupId: this.props.message.groupId
+        }
+        this.creatNewMessage(newMessage)
+        .then(result => result.json())
+        .then(result => {
+          console.log('newMessage =', result)
+          var messages = Immutable.asMutable(context.props.messagesArr, {deep: true})
+          result.commandName = result.name
+          result.mediumType = this.props.message.mediumType
+          result.text = this.state.messageText
+          messages.push(result)
+          this.props.updateMessageArr(messages)
+        })
       }
+    } else {
+      let newMessage = {
+        text: this.state.messageText,
+        additionalContent: null,
+        name: this.state.messageName,
+        userId: this.props.userId,
+        groupId: null
+      }
+      this.creatNewMessage(newMessage)
+        .then(result => result.json())
+        .then(result => {
+          console.log('newMessage =', result)
+          var messages = Immutable.asMutable(context.props.messagesArr, {deep: true})
+          result.commandName = result.name
+          result.text = this.state.messageText
+          messages.push(result)
+          this.props.updateMessageArr(messages)
+        })
     }
+
     // console.log('hi jesse = ', (this.state.messageName === this.props.message.commandName))
   }
 
@@ -144,7 +186,17 @@ class MessageDetails extends React.Component {
     this.setState({ messageText: text })
   }
 
-
+  creatNewMessage (newMessage) {
+    return fetch('http://192.168.1.227:3000/command/newCommand/', {
+       method: 'Post',
+       headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': this.props.token
+      },
+       body: JSON.stringify({newCommand: newMessage})
+     })
+  }
 
   updateMessageName (messageId, newName) {
     return fetch('http://192.168.1.227:3000/command/updateName/', {
@@ -161,21 +213,20 @@ class MessageDetails extends React.Component {
     })
   }
 
-   updateMessageText (messageId, newMessage) {
+  updateMessageText (messageId, newMessage) {
     return fetch('http://192.168.1.227:3000/command/newMessage/', {
-      method: 'POST',
-      headers: {
+       method: 'POST',
+       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
         'Authorization': this.props.token
       },
-      body: JSON.stringify({
+       body: JSON.stringify({
         'commandId': messageId,
         'newMessage': newMessage
       })
-    })
+     })
   }
-
 
   render () {
     const { messageName, messageText } = this.state
@@ -183,7 +234,7 @@ class MessageDetails extends React.Component {
     const editable = !fetching
     const textInputStyle = editable ? Styles.textInput : Styles.textInputReadonly
     return (
-      <ScrollView contentContainerStyle={{justifyContent: 'center'}} style={[Styles.container, {height: this.state.visibleHeight}]} keyboardShouldPersistTaps="always">
+      <ScrollView contentContainerStyle={{justifyContent: 'center'}} style={[Styles.container, {height: this.state.visibleHeight}]} keyboardShouldPersistTaps='always'>
         <View style={Styles.form}>
           <View style={Styles.row}>
             <Text style={Styles.rowLabel}>Message Name</Text>
@@ -246,7 +297,8 @@ const mapStateToProps = (state) => {
   return {
     message: state.message.message,
     token: state.login.token,
-    messagesArr: state.login.messages
+    messagesArr: state.login.messages,
+    userId: state.login.userId
   }
 }
 
