@@ -128,7 +128,6 @@ class MessagesList extends React.Component {
     
   *************************************************************/
 componentWillReceiveProps (newProps) {
-  console.log("is messages props changing?", newProps)
   this.setState({
     dataSource: this.state.dataSource.cloneWithRowsAndSections(newProps.messages)
   })
@@ -140,7 +139,6 @@ componentWillReceiveProps (newProps) {
   }
 
   clickMessage (message) {
-      console.log("hi jesse= ", message)
       this.props.setMessage(message)
       NavigationActions.messageDetails()
     }
@@ -192,7 +190,6 @@ const mapStateToProps = (state) => {
         var emailArr = []
         var blankArr = []
    for (let el of state.login.messages) {
-     console.log('element in reducerMesssages = ', el)
           if (el.mediumType === "T") {
             textArr.push(el)
           } else if (el.mediumType === "S") {

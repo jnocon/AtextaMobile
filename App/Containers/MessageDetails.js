@@ -45,7 +45,7 @@ class MessageDetails extends React.Component {
     super(props)
     this.state = {
       messageName: this.props.message ? this.props.message.commandName : null,
-      method: this.props.message ? this.props.message.text : null,
+      messageText: this.props.message ? this.props.message.text : null,
       messagesArr: this.props.messagesArr,
       visibleHeight: Metrics.screenHeight,
       topLogo: { width: Metrics.screenWidth }
@@ -93,41 +93,55 @@ class MessageDetails extends React.Component {
     let context = this
     if (this.props.message) {
       if ((this.state.messageName === this.props.message.commandName) === false) {
+        console.log('this?')
         this.updateMessageName(this.props.message.id, this.state.messageName)
         .then(result => result.json())
         .then(result => {
-          console.log('result after updatating name = ', result)
           var messages = Immutable.asMutable(context.props.messagesArr, {deep: true})
-          console.log('before update', messages)
           messages.forEach(message => {
             if (message.id === context.props.message.id) {
-            console.log('in update 1', messages,  message.commandName, context.state.messageName)
-            this.setState({
-                  visibleHeight: Metrics.screenHeight,
-                  topLogo: {width: Metrics.screenWidth}
-                })
             message.commandName = context.state.messageName
-            console.log('in update 2', messages,  message.commandName, context.state.messageName)
             }
           })
-          var final = Immutable(messages)
-          console.log('after update', final)
-          context.props.updateMessageArr(final)
+          context.props.updateMessageArr(messages)
         })
         .catch(error => {
-          console.log('error in update messsage = ', error)
+          console.log('error in update messsageName = ', error)
         })
       } 
+      if ((this.state.messageText === this.props.message.text) === false) {
+        console.log('or here?')
+        let newMessage = Immutable.asMutable(this.props.message)
+        newMessage.text = this.state.messageText
+        this.updateMessageText(this.props.message.id, newMessage)
+        .then(result => {
+          console.log("after updating message = ", result)
+          let res = result
+          return res.json()})
+        .then(result => {
+          console.log("after updating message json = ", result)
+          var messages = Immutable.asMutable(context.props.messagesArr, {deep: true})
+          messages.forEach(message => {
+            if (message.id === context.props.message.id) {
+            message.text = context.state.messageText
+            }
+          })
+          context.props.updateMessageArr(messages)
+        })
+        .catch(error => {
+          console.log('error in update messsageText = ', error)
+        })
+      }
     }
     // console.log('hi jesse = ', (this.state.messageName === this.props.message.commandName))
   }
 
-  handleChangemessageName = (text) => {
+  handleChangeMessageName = (text) => {
     this.setState({ messageName: text })
   }
 
-  handleChangeMethod= (text) => {
-    this.setState({ method: text })
+  handleChangeMessageText= (text) => {
+    this.setState({ messageText: text })
   }
 
 
@@ -147,8 +161,8 @@ class MessageDetails extends React.Component {
     })
   }
 
-   updateMessageText (messageId, newText) {
-    return fetch('http://192.168.1.227:3000/commands/updateGroup/', {
+   updateMessageText (messageId, newMessage) {
+    return fetch('http://192.168.1.227:3000/command/newMessage/', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -157,29 +171,14 @@ class MessageDetails extends React.Component {
       },
       body: JSON.stringify({
         'commandId': messageId,
-        'newMesssage': newText
-      })
-    })
-  }
-  
-  updateMessageGroup (messageId, newGroupId) {
-    return fetch('http://192.168.1.227:3000/commands/updateGroup/', {
-      method: 'PUT',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': this.props.token
-      },
-      body: JSON.stringify({
-        'commandId': messageId,
-        'groupId': newGroupId
+        'newMessage': newMessage
       })
     })
   }
 
 
   render () {
-    const { messageName, method } = this.state
+    const { messageName, messageText } = this.state
     const { fetching } = this.props
     const editable = !fetching
     const textInputStyle = editable ? Styles.textInput : Styles.textInputReadonly
@@ -197,24 +196,23 @@ class MessageDetails extends React.Component {
               returnKeyType='next'
               autoCapitalize='none'
               autoCorrect={false}
-              onChangeText={this.handleChangemessageName}
+              onChangeText={this.handleChangeMessageName}
               underlineColorAndroid='transparent'
-              onSubmitEditing={() => this.refs.method.focus()}
+              onSubmitEditing={this.handleSaveDetails}
               placeholder='Put Message Name Here' />
           </View>
-
           <View style={Styles.row}>
             <Text style={Styles.rowLabel}>Message Content</Text>
             <TextInput
-              ref='method'
+              ref='messageText'
               style={textInputStyle}
-              value={method}
+              value={messageText}
               editable={editable}
               keyboardType='default'
               returnKeyType='go'
               autoCapitalize='none'
               autoCorrect={false}
-              onChangeText={this.handleChangemethod}
+              onChangeText={this.handleChangeMessageText}
               underlineColorAndroid='transparent'
               onSubmitEditing={this.handleSaveDetails}
               placeholder='Running late; Be there when I can!!!' />
@@ -222,19 +220,6 @@ class MessageDetails extends React.Component {
 
           <View style={Styles.row}>
             <Text style={Styles.rowLabel}>Command</Text>
-            <TextInput
-              ref='method'
-              style={textInputStyle}
-              value={method}
-              editable={editable}
-              keyboardType='default'
-              returnKeyType='go'
-              autoCapitalize='none'
-              autoCorrect={false}
-              onChangeText={this.handleChangemethod}
-              underlineColorAndroid='transparent'
-              onSubmitEditing={this.handleSaveDetails}
-              placeholder='Alexa Texta Send Retro Reminder' />
           </View>
 
           <View style={Styles.row}>

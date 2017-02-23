@@ -1,10 +1,12 @@
-// @flow
-
 import React from 'react'
 import { View, Text, ListView, TouchableOpacity } from 'react-native'
 import { connect } from 'react-redux'
 import RoundedButton from '../Components/RoundedButton'
 import { Actions as NavigationActions } from 'react-native-router-flux'
+import GroupDetailActions from '../Redux/GroupDetailRedux'
+import MessageDetailActions from '../Redux/MessageDetailRedux'
+import LoginActions from '../Redux/AuthRedux'
+import Immutable from 'seamless-immutable'
 
 // For empty lists
 import AlertMessage from '../Components/AlertMessage'
@@ -25,11 +27,11 @@ class GroupChooseView extends React.Component {
     * This is an array of objects with the properties you desire
     * Usually this should come from Redux mapStateToProps
     *************************************************************/
-    const dataObjects = [
-      {title: 'All Students', description: 'Slack'},
-      {title: "HIR's", description: 'Email'},
-      {title: 'Ricky and Serge', description: 'Text'}
-    ]
+    // const dataObjects = [
+    //   {title: 'All Students', description: 'Slack'},
+    //   {title: "HIR's", description: 'Email'},
+    //   {title: 'Ricky and Serge', description: 'Text'}
+    // ]
 
     /* ***********************************************************
     * STEP 2
@@ -44,7 +46,7 @@ class GroupChooseView extends React.Component {
 
     // Datasource is always in state
     this.state = {
-      dataSource: ds.cloneWithRows(dataObjects)
+      dataSource: ds.cloneWithRows(this.props.groups)
     }
   }
 
@@ -58,11 +60,9 @@ class GroupChooseView extends React.Component {
   *************************************************************/
   renderRow (rowData) {
     return (
-      <TouchableOpacity onPress={NavigationActions.pop}>
-        <View style={styles.row}>
-          <Text style={styles.boldLabel}>{rowData.title}</Text>
-          <Text style={styles.label}>{rowData.description}</Text>
-        </View>
+      <TouchableOpacity onPress={() => this.clickGroup(rowData)} style={styles.row}>
+        <Text style={styles.boldLabel}>{rowData.name}</Text>
+        <Text style={styles.label}>{rowData.mediumType}</Text>
       </TouchableOpacity>
     )
   }
@@ -91,17 +91,64 @@ class GroupChooseView extends React.Component {
     return this.state.dataSource.getRowCount() === 0
   }
 
+  clickGroup (group) {
+      let newMessage = Immutable.asMutable(this.props.message, {deep: true})
+      this.updateMessageGroup(newMessage.id, group.groupId)
+      .then(result => result.json())
+      .then(result => {
+        console.log("hi jesse= ", group, newMessage)
+        newMessage.groupId = group.groupId
+        newMessage.groupName = group.name
+        newMessage.mediumType = group.mediumType
+        console.log('whats good dude =', newMessage)
+        this.props.setMessage(newMessage)
+        let messages = Immutable.asMutable(this.props.messagesArr, {deep: true})
+        messages.forEach(message => {
+        if (message.id === newMessage.id) {
+            message.groupId = group.groupId
+            message.groupName = group.name
+            message.mediumType = group.mediumType
+            }
+          })
+        this.props.updateMessageArr(messages)
+        NavigationActions.pop()
+      })
+      .catch(error => {
+        console.log('error in choose new group for message = ', error)
+      }) 
+      
+    }
+
+  updateMessageGroup (messageId, newGroupId) {
+    return fetch('http://192.168.1.227:3000/command/updateGroup/', {
+      method: 'PUT',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': this.props.token
+      },
+      body: JSON.stringify({
+        'commandId': messageId,
+        'groupId': newGroupId
+      })
+    })
+  }
+  
+  createNewGroup () {
+    this.props.setGroup(undefined)
+    NavigationActions.groupDetails()
+  }
+
   render () {
     return (
       <View style={styles.container}>
-        <AlertMessage title='Click The Button Below to Create a group!' show={this.noRowData()} />
         <ListView
           contentContainerStyle={styles.listContent}
           dataSource={this.state.dataSource}
-          renderRow={this.renderRow}
+          renderRow={this.renderRow.bind(this)}
           pageSize={15}
         />
-        <RoundedButton onPress={NavigationActions.groupDetails}>
+        <RoundedButton onPress={this.createNewGroup.bind(this)}>
            Create New Group
         </RoundedButton>
       </View>
@@ -111,8 +158,19 @@ class GroupChooseView extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    // ...redux state to props here
+    groups: state.login.groups,
+    message: state.message.message,
+    messagesArr: state.login.messages,
+    token: state.login.token
   }
 }
 
-export default connect(mapStateToProps)(GroupChooseView)
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setGroup: (group) => dispatch(GroupDetailActions.setGroup(group)),
+    setMessage: (message) => dispatch(MessageDetailActions.setMessage(message)),
+    updateMessageArr: (messageArr) => dispatch(LoginActions.updateMessageArr(messageArr))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(GroupChooseView)
