@@ -92,6 +92,7 @@ class GroupChooseView extends React.Component {
   }
 
   clickGroup (group) {
+    if (this.props.message) {
       let newMessage = Immutable.asMutable(this.props.message, {deep: true})
       this.updateMessageGroup(newMessage.id, group.groupId)
       .then(result => result.json())
@@ -116,6 +117,16 @@ class GroupChooseView extends React.Component {
       .catch(error => {
         console.log('error in choose new group for message = ', error)
       }) 
+    } else {
+      let messageGroup = {
+        groupId: group.groupId,
+        groupName: group.name,
+        mediumType: group.mediumType
+      }
+      this.props.setMessage(messageGroup)
+      NavigationActions.pop()
+    }
+      
       
     }
 
