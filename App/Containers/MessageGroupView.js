@@ -108,7 +108,7 @@ class MessageGroupView extends React.Component {
 
 const mapStateToProps = (state) => {
   let messageArr = [state.message.message]
-  if (state.message.message.groupId === null) {
+  if (!state.message.message) {
     messageArr = []
   } 
   return {

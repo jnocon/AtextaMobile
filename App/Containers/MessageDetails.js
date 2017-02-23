@@ -15,6 +15,8 @@ import Styles from './Styles/LoginScreenStyle'
 import {Metrics} from '../Themes'
 import { Actions as NavigationActions } from 'react-native-router-flux'
 import MessageGroupView from './MessageGroupView'
+import LoginActions from '../Redux/AuthRedux'
+import Immutable from 'seamless-immutable'
 
 // type GroupDetailsProps = {
 //   dispatch: () => any
@@ -44,6 +46,7 @@ class MessageDetails extends React.Component {
     this.state = {
       messageName: this.props.message ? this.props.message.commandName : null,
       method: this.props.message ? this.props.message.text : null,
+      messagesArr: this.props.messagesArr,
       visibleHeight: Metrics.screenHeight,
       topLogo: { width: Metrics.screenWidth }
     }
@@ -62,10 +65,10 @@ class MessageDetails extends React.Component {
     this.keyboardDidHideListener.remove()
   }
 
-  componentDidMount () {
-    mapStateToProps
-    console.log('hi jesse', this.props)
-  }
+  // componentDidMount () {
+  //   mapStateToProps
+  //   console.log('hi jesse', this.props)
+  // }
 
   keyboardDidShow = (e) => {
     // Animation types easeInEaseOut/linear/spring
@@ -87,10 +90,36 @@ class MessageDetails extends React.Component {
   }
 
   handleSaveDetails = () => {
-    // const { messageName, method } = this.state
-    // this.isAttempting = true
-    // attempt a login - a saga is listening to pick it up from here.
-    // this.props.attemptLogin(messageName, method)
+    let context = this
+    if (this.props.message) {
+      if ((this.state.messageName === this.props.message.commandName) === false) {
+        this.updateMessageName(this.props.message.id, this.state.messageName)
+        .then(result => result.json())
+        .then(result => {
+          console.log('result after updatating name = ', result)
+          var messages = Immutable.asMutable(context.props.messagesArr, {deep: true})
+          console.log('before update', messages)
+          messages.forEach(message => {
+            if (message.id === context.props.message.id) {
+            console.log('in update 1', messages,  message.commandName, context.state.messageName)
+            this.setState({
+                  visibleHeight: Metrics.screenHeight,
+                  topLogo: {width: Metrics.screenWidth}
+                })
+            message.commandName = context.state.messageName
+            console.log('in update 2', messages,  message.commandName, context.state.messageName)
+            }
+          })
+          var final = Immutable(messages)
+          console.log('after update', final)
+          context.props.updateMessageArr(final)
+        })
+        .catch(error => {
+          console.log('error in update messsage = ', error)
+        })
+      } 
+    }
+    // console.log('hi jesse = ', (this.state.messageName === this.props.message.commandName))
   }
 
   handleChangemessageName = (text) => {
@@ -100,6 +129,54 @@ class MessageDetails extends React.Component {
   handleChangeMethod= (text) => {
     this.setState({ method: text })
   }
+
+
+
+  updateMessageName (messageId, newName) {
+    return fetch('http://192.168.1.227:3000/command/updateName/', {
+      method: 'PUT',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': this.props.token
+      },
+      body: JSON.stringify({
+        'commandId': messageId,
+        'updateName': newName
+      })
+    })
+  }
+
+   updateMessageText (messageId, newText) {
+    return fetch('http://192.168.1.227:3000/commands/updateGroup/', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': this.props.token
+      },
+      body: JSON.stringify({
+        'commandId': messageId,
+        'newMesssage': newText
+      })
+    })
+  }
+  
+  updateMessageGroup (messageId, newGroupId) {
+    return fetch('http://192.168.1.227:3000/commands/updateGroup/', {
+      method: 'PUT',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': this.props.token
+      },
+      body: JSON.stringify({
+        'commandId': messageId,
+        'groupId': newGroupId
+      })
+    })
+  }
+
 
   render () {
     const { messageName, method } = this.state
@@ -182,13 +259,15 @@ class MessageDetails extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    message: state.message.message
+    message: state.message.message,
+    token: state.login.token,
+    messagesArr: state.login.messages
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    // attemptLogin: (messageName, method) => dispatch(LoginActions.loginRequest(messageName, method))
+    updateMessageArr: (messageArr) => dispatch(LoginActions.updateMessageArr(messageArr))
   }
 }
 

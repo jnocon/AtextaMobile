@@ -128,43 +128,11 @@ class MessagesList extends React.Component {
     
   *************************************************************/
 componentWillReceiveProps (newProps) {
-      if (Array.isArray(newProps.messages)) {
-        console.log("is messages props changing?", newProps)
-        let textArr = []
-        let slackArr = []
-        let emailArr = []
-        let blankArr = []
-        for (let el of newProps.messages) {
-     console.log('element in reducerMesssages = ', el)
-          if (el.mediumType === "T") {
-            textArr.push(el)
-          } else if (el.mediumType === "S") {
-            slackArr.push(el)
-          } else if (el.mediumType === "E") {
-            emailArr.push(el)
-          } else if (el.mediumType === null) {
-            blankArr.push(el)
-          }
-        }
-   let data = {}
-        if (textArr.length !== 0 ) {
-          data.Texts = textArr
-        }
-        if (emailArr.length !== 0 ) {
-          data.Emails = emailArr
-        }
-        if (slackArr.length !== 0 ) {
-          data.Slacks = slackArr
-        }
-        if (blankArr.length !== 0 ) {
-          data.Blank = blankArr
-        }
-    console.log('data in reducerMesssages= ', data)
-        this.setState({
-          dataSource: this.state.dataSource.cloneWithRowsAndSections(data)
-        })
-      }
-    }
+  console.log("is messages props changing?", newProps)
+  this.setState({
+    dataSource: this.state.dataSource.cloneWithRowsAndSections(newProps.messages)
+  })
+}
   // Used for friendly AlertMessage
   // returns true if the dataSource is empty
   noRowData () {
