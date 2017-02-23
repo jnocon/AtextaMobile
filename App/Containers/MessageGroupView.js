@@ -82,7 +82,13 @@ class MessageGroupView extends React.Component {
       }
     }
   *************************************************************/
-
+ componentWillReceiveProps (newProps) {
+      if (newProps.message) {
+        this.setState({
+          dataSource: this.state.dataSource.cloneWithRows(newProps.message)
+        })
+      }
+    }
   // Used for friendly AlertMessage
   // returns true if the dataSource is empty
   noRowData () {
