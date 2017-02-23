@@ -3,6 +3,8 @@
 import {
   AppRegistry,
   StyleSheet,
+  ScrollView,
+  Image,
   Text,
   View,
   TouchableOpacity
@@ -14,6 +16,8 @@ import LoginActions from '../Redux/AuthRedux'
 import { Actions as NavigationActions } from 'react-native-router-flux'
 
 import Auth0Lock from 'react-native-lock';
+import styles from './Styles/PresentationScreenStyle'
+import { Images } from '../Themes'
 
 class WelcomeView extends Component {
   constructor(props) {
@@ -61,18 +65,22 @@ _onLogin = () => {
 
   render() {
     return (
-      <View style={styles.container}>
-        <View style={styles.messageBox}>
-          <Text style={styles.title}>Welcome To Atexta</Text>
-          <Text style={styles.subtitle}>Login With Your Amazon Account to Continue</Text>
+            
+        <View style={styling.container}>
+        <View style={styles.centered}>
+              <Image source={Images.atextaLogo} style={styles.logo} />
         </View>
-        <TouchableOpacity
-          style={styles.signInButton}
-          underlayColor='#949494'
-          onPress={this._onLogin}>
-          <Text>Log In</Text>
-        </TouchableOpacity>
-      </View>
+          <View style={styling.messageBox}>
+            <Text style={styling.title}>Welcome To Atexta</Text>
+            <Text style={styling.subtitle}>Login With Your Amazon Account to Continue</Text>
+          </View>
+          <TouchableOpacity
+            style={styling.signInButton}
+            underlayColor='#949494'
+            onPress={this._onLogin}>
+            <Text>Log In</Text>
+          </TouchableOpacity>
+        </View>
     );
   };
 
@@ -80,12 +88,12 @@ _onLogin = () => {
 
 
 
-var styles = StyleSheet.create({
+var styling = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'center',
-    backgroundColor: '#15204C',
+    backgroundColor: '#270943',
   },
   messageBox: {
     flex: 1,
@@ -99,7 +107,7 @@ var styles = StyleSheet.create({
   title: {
     fontSize: 17,
     textAlign: 'center',
-    marginTop: 8,
+    marginTop: 2,
     color: '#FFFFFF',
   },
   subtitle: {
