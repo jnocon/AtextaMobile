@@ -45,7 +45,7 @@ class GroupDetails extends React.Component {
 
   constructor (props) {
     super(props)
-    console.log("props in groupDetails = ", this.props)
+    console.log('props in groupDetails = ', this.props)
     this.state = {
       groupName: this.props.group ? this.props.group.name : null,
       method: this.props.group ? this.props.group.mediumType : null,
@@ -94,7 +94,7 @@ class GroupDetails extends React.Component {
     })
   }
 
- handleSaveDetails = () => {
+  handleSaveDetails = () => {
     let context = this
     if (this.props.group) {
       console.log('hi jesse', this.props.group, this.state.groupName)
@@ -105,7 +105,7 @@ class GroupDetails extends React.Component {
           var groups = Immutable.asMutable(context.props.groupsArr, {deep: true})
           groups.forEach(group => {
             if (group.groupId === context.props.group.groupId) {
-            group.name = context.state.groupName
+              group.name = context.state.groupName
             }
           })
           context.props.updateGroupArr(groups)
@@ -113,7 +113,7 @@ class GroupDetails extends React.Component {
         .catch(error => {
           console.log('error in update groupName = ', error)
         })
-      } 
+      }
     }
     // console.log('hi jesse = ', (this.state.messageName === this.props.message.commandName))
   }
@@ -143,14 +143,13 @@ class GroupDetails extends React.Component {
 
   render () {
     const { groupName, method } = this.state
-    const { fetching } = this.props
     let editable = false
     if (this.state.method) {
-     editable = false
+      editable = false
     }
-    const textInputStyle = editable ? Styles.textInput : Styles.textInputReadonly
+    const textInputStyle = Styles.textInput
     return (
-      <ScrollView contentContainerStyle={{justifyContent: 'center'}} style={[Styles.container, {height: this.state.visibleHeight}]} keyboardShouldPersistTaps="always">
+      <ScrollView contentContainerStyle={{justifyContent: 'center'}} style={[Styles.container, {height: this.state.visibleHeight}]} keyboardShouldPersistTaps='always'>
         <View style={Styles.form}>
           <View style={Styles.row}>
             <Text style={Styles.rowLabel}>{I18n.t('GroupName')}</Text>
@@ -158,7 +157,7 @@ class GroupDetails extends React.Component {
               ref='groupName'
               style={textInputStyle}
               value={groupName}
-              editable={true}
+              editable
               keyboardType='default'
               returnKeyType='next'
               autoCapitalize='none'
@@ -188,7 +187,7 @@ class GroupDetails extends React.Component {
 
           <View style={Styles.row}>
             <Text style={Styles.rowLabel}>Message Recipients</Text>
-            <RecipientsList />
+            <RecipientsList recipients={this.props.recipientsArr} />
           </View>
 
           <View style={[Styles.loginRow]}>
@@ -209,6 +208,7 @@ class GroupDetails extends React.Component {
 const mapStateToProps = (state) => {
   return {
     group: state.group.group,
+    recipientsArr: state.group.group ? state.group.group.recipients : [],
     token: state.login.token,
     groupsArr: state.login.groups
   }

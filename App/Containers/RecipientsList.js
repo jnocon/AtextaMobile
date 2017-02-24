@@ -76,6 +76,14 @@ class RecipientsList extends React.Component {
 
   // Used for friendly AlertMessage
   // returns true if the dataSource is empty
+
+  componentWillReceiveProps (newProps) {
+    if (newProps.recipients) {
+      this.setState({
+        dataSource: this.state.dataSource.cloneWithRows(newProps.recipients)
+      })
+    }
+  }
   noRowData () {
     return this.state.dataSource.getRowCount() === 0
   }
