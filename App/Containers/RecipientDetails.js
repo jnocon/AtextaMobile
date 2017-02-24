@@ -16,6 +16,9 @@ import Styles from './Styles/LoginScreenStyle'
 import {Images, Metrics} from '../Themes'
 import RoundedButton from '../Components/RoundedButton'
 import { Actions as NavigationActions } from 'react-native-router-flux'
+import LoginActions from '../Redux/AuthRedux'
+import Immutable from 'seamless-immutable'
+import GroupDetailActions from '../Redux/GroupDetailRedux'
 // import I18n from 'react-native-i18n'
 
 // type GroupDetailsProps = {
@@ -93,27 +96,120 @@ class RecipientDetails extends React.Component {
   }
 
   handleSaveDetails = () => {
-    // const { recipientName, method } = this.state
-    // this.isAttempting = true
-    // attempt a login - a saga is listening to pick it up from here.
-    // this.props.attemptLogin(recipientName, method)
+    if (this.props.group) {
+      if (this.props.recipient) {
+        let recipInfo = {}
+        recipInfo.name = this.state.recipientName
+        recipInfo.contactInfo = this.state.contactInfo
+        this.updateRecipient(this.props.recipient.id, recipInfo)
+      .then(result => {
+        var groups = Immutable.asMutable(this.props.groupsArr, {deep: true})
+        console.log('groups before = ', groups)
+        groups.forEach(group => {
+          if (this.props.groupId === group.groupId) {
+            group.recipients.forEach(recip => {
+              if (recip.id === this.props.recipient.id) {
+                recip.name = this.state.recipientName
+                recipInfo.contactInfo = this.state.contactInfo
+              }
+            })
+          }
+        })
+        console.log('groups after = ', groups)
+        let group = Immutable.asMutable(this.props.group, {deep: true})
+        group.recipients.forEach(recip => {
+          if (recip.id === this.props.recipient.id) {
+            recip.name = this.state.recipientName
+            recipInfo.contactInfo = this.state.contactInfo
+          }
+        })
+        this.props.setGroup(group)
+        this.props.updateGroupArr(groups)
+      })
+      .catch(error => {
+        console.log('error in updateRecip =', error)
+      })
+      } else {
+        let recipInfo = {}
+        recipInfo.name = this.state.recipientName
+        recipInfo.contactInfo = this.state.contactInfo
+        recipInfo.mediumType = this.props.group.mediumType
+        this.newRecipient(this.props.userId, recipInfo)
+        .then(res => {
+          var groups = Immutable.asMutable(this.props.groupsArr, {deep: true})
+          console.log('groups before = ', groups)
+          groups.forEach(group => {
+            if (this.props.groupId === group.groupId) {
+              group.recipients.push({
+                name: this.state.recipientName,
+                contactInfo: this.state.contactInfo
+              })
+            }
+          })
+          console.log('groups after = ', groups)
+          let group = Immutable.asMutable(this.props.group, {deep: true})
+          group.recipients.push({
+            name: this.state.recipientName,
+            contactInfo: this.state.contactInfo
+          })
+          this.props.setGroup(group)
+          this.props.updateGroupArr(groups)
+        })
+      }
+    } else {
+      let group = {recipients: []}
+      group.recipients.push({
+        name: this.state.recipientName,
+        contactInfo: this.state.contactInfo
+      })
+      this.props.setGroup(group)
+    }
   }
 
-  handleChangerecipientName = (text) => {
+  updateRecipient (id, info) {
+    return fetch('http://192.168.1.227:3000/groups/recipientInfo', {
+      method: 'Put',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': this.props.token
+      },
+      body: JSON.stringify({
+        recipientId: id,
+        recipientInfo: info
+      })
+    })
+  }
+
+  newRecipient (id, info) {
+    return fetch('http://192.168.1.227:3000/groups/newRecipient', {
+      method: 'Post',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': this.props.token
+      },
+      body: JSON.stringify({
+        userId: id,
+        recipientInfo: info
+      })
+    })
+  }
+
+  handleChangeRecipientName = (text) => {
     this.setState({ recipientName: text })
   }
 
-  handleChangeMethod= (text) => {
-    this.setState({ method: text })
+  handleChangeContactInfo= (text) => {
+    this.setState({ contactInfo: text })
   }
 
   render () {
     const { recipientName, contactInfo } = this.state
-    const { fetching } = this.props
-    const editable = !fetching
-    const textInputStyle = editable ? Styles.textInput : Styles.textInputReadonly
+    const editable = true
+    const textInputStyle = Styles.textInput
     return (
-      <ScrollView contentContainerStyle={{justifyContent: 'center'}} style={[Styles.container, {height: this.state.visibleHeight}]} keyboardShouldPersistTaps="always">
+      <ScrollView contentContainerStyle={{justifyContent: 'center'}} style={[Styles.container, {height: this.state.visibleHeight}]} keyboardShouldPersistTaps='always'>
         <Image source={Images.logo} style={[Styles.topLogo, this.state.topLogo]} />
         <View style={Styles.form}>
           <View style={Styles.row}>
@@ -127,7 +223,7 @@ class RecipientDetails extends React.Component {
               returnKeyType='next'
               autoCapitalize='none'
               autoCorrect={false}
-              onChangeText={this.handleChangerecipientName}
+              onChangeText={this.handleChangeRecipientName}
               underlineColorAndroid='transparent'
               onSubmitEditing={() => this.refs.contactInfo.focus()}
               placeholder='Put Recipient Name Here' />
@@ -144,7 +240,7 @@ class RecipientDetails extends React.Component {
               returnKeyType='go'
               autoCapitalize='none'
               autoCorrect={false}
-              onChangeText={this.handleChangecontactInfo}
+              onChangeText={this.handleChangeContactInfo}
               underlineColorAndroid='transparent'
               onSubmitEditing={this.handleSaveDetails}
               placeholder='phone number, email, etc' />
@@ -171,13 +267,19 @@ class RecipientDetails extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    recipient: state.recipient.recipient
+    recipient: state.recipient.recipient,
+    group: state.group.group,
+    token: state.login.token,
+    groupsArr: state.login.groups,
+    groupId: state.group.group ? state.group.group.groupId : null,
+    userId: state.login.userId
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    // attemptLogin: (recipientName, contactInfo) => dispatch(LoginActions.loginRequest(recipientName, contactInfo))
+    updateGroupArr: (groupArr) => dispatch(LoginActions.updateGroupArr(groupArr)),
+    setGroup: (group) => dispatch(GroupDetailActions.setGroup(group))
   }
 }
 

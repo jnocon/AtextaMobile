@@ -29,7 +29,7 @@ export const setRecipient = (state: Object, { recipient }: Object) =>
 /* ------------- Hookup Reducers To Types ------------- */
 
 export const reducer = createReducer(INITIAL_STATE, {
-  [Types.SET_RECIPIENT]: setRecipient,
+  [Types.SET_RECIPIENT]: setRecipient
 })
 
 /* ------------- Selectors ------------- */
