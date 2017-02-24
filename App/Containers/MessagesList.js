@@ -49,7 +49,6 @@ class MessagesList extends React.Component {
     //   ]
     // }
 
-    
     /* ***********************************************************
     * STEP 2
     * Teach datasource how to detect if rows are different
@@ -90,31 +89,27 @@ class MessagesList extends React.Component {
   //     })
   //   }
 
-    getMessages(userId) {
-      return fetch('http://192.168.1.227:3000/command/userCommands/' + userId, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-      
-      })
-    }
+  getMessages (userId) {
+    return fetch('http://192.168.1.227:3000/command/userCommands/' + userId, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+
+    })
+  }
 
   renderRow (rowData, sectionID) {
     // You can condition on sectionID (key as string), for different cells
     // in different sections
     return (
-      <TouchableOpacity onPress = {() => this.clickMessage(rowData)}>
-        <View style={styles.row}>
-          <Text style={styles.boldLabel}>{sectionID} - {rowData.commandName}</Text>
-          <Text style={styles.label}>{rowData.text}</Text>
-        </View>
+      <TouchableOpacity onPress={() => this.clickMessage(rowData)} style={styles.row}>
+        <Text style={styles.boldLabel}>{sectionID} - {rowData.commandName}</Text>
+        <Text style={styles.label}>{rowData.text}</Text>
       </TouchableOpacity>
     )
   }
-
- 
 
   /* ***********************************************************
   * STEP 4
@@ -125,14 +120,14 @@ class MessagesList extends React.Component {
   * state's datasource on newProps.
   *
   * e.g.
-    
+
   *************************************************************/
-componentWillReceiveProps (newProps) {
-  console.log('newProps in messages List = ', newProps)
-  this.setState({
-    dataSource: this.state.dataSource.cloneWithRowsAndSections(newProps.messages)
-  })
-}
+  componentWillReceiveProps (newProps) {
+    console.log('newProps in messages List = ', newProps)
+    this.setState({
+      dataSource: this.state.dataSource.cloneWithRowsAndSections(newProps.messages)
+    })
+  }
   // Used for friendly AlertMessage
   // returns true if the dataSource is empty
   noRowData () {
@@ -140,9 +135,9 @@ componentWillReceiveProps (newProps) {
   }
 
   clickMessage (message) {
-      this.props.setMessage(message)
-      NavigationActions.messageDetails()
-    }
+    this.props.setMessage(message)
+    NavigationActions.messageDetails()
+  }
 
   renderHeader (data, sectionID) {
     switch (sectionID) {
@@ -161,8 +156,6 @@ componentWillReceiveProps (newProps) {
     this.props.setMessage(undefined)
     NavigationActions.messageDetails()
   }
-
-  
 
   render () {
     return (
@@ -186,37 +179,37 @@ componentWillReceiveProps (newProps) {
 }
 
 const mapStateToProps = (state) => {
-  console.log("heye jessse = ", state.login.messages) 
-        var textArr = []
-        var slackArr = []
-        var emailArr = []
-        var blankArr = []
-   for (let el of state.login.messages) {
-          if (el.mediumType === "T") {
-            textArr.push(el)
-          } else if (el.mediumType === "S") {
-            slackArr.push(el)
-          } else if (el.mediumType === "E") {
-            emailArr.push(el)
-          } else {
-            blankArr.push(el)
-          }
-        }
-        let data = {}
-        if (textArr.length !== 0 ) {
-          data.Texts = textArr
-        }
-        if (emailArr.length !== 0 ) {
-          data.Emails = emailArr
-        }
-        if (slackArr.length !== 0 ) {
-          data.Slacks = slackArr
-        }
-        if (blankArr.length !== 0 ) {
-          data.Blank = blankArr
-        }
-    
-    console.log('data in reducerMesssages= ', data)
+  console.log('heye jessse = ', state.login.messages)
+  var textArr = []
+  var slackArr = []
+  var emailArr = []
+  var blankArr = []
+  for (let el of state.login.messages) {
+    if (el.mediumType === 'T') {
+      textArr.push(el)
+    } else if (el.mediumType === 'S') {
+      slackArr.push(el)
+    } else if (el.mediumType === 'E') {
+       emailArr.push(el)
+     } else {
+       blankArr.push(el)
+     }
+  }
+  let data = {}
+  if (textArr.length !== 0) {
+    data.Texts = textArr
+  }
+  if (emailArr.length !== 0) {
+    data.Emails = emailArr
+  }
+  if (slackArr.length !== 0) {
+    data.Slacks = slackArr
+  }
+  if (blankArr.length !== 0) {
+    data.Blank = blankArr
+  }
+
+  console.log('data in reducerMesssages= ', data)
   return {
     messages: data
   }
@@ -224,7 +217,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-   setMessage: (message) => dispatch(MessageDetailActions.setMessage(message))
+    setMessage: (message) => dispatch(MessageDetailActions.setMessage(message))
   }
 }
 

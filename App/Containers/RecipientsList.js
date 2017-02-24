@@ -123,7 +123,7 @@ class RecipientsList extends React.Component {
 const mapStateToProps = (state) => {
   if (state.group.group) {
     return {
-      recipients: state.group.group.recipients
+      recipients: state.group.group.recipients ? state.group.group.recipients : []
     }
   } else {
     return {

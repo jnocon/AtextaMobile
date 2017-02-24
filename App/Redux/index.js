@@ -12,7 +12,8 @@ export default () => {
     search: require('./SearchRedux').reducer,
     message: require('./MessageDetailRedux').reducer,
     group: require('./GroupDetailRedux').reducer,
-    recipient: require('./RecipDetailRedux').reducer
+    recipient: require('./RecipDetailRedux').reducer,
+    recipArr: require('./RecipArrRedux').reducer
   })
 
   return configureStore(rootReducer, rootSaga)

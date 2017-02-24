@@ -19,6 +19,7 @@ import { Actions as NavigationActions } from 'react-native-router-flux'
 import LoginActions from '../Redux/AuthRedux'
 import Immutable from 'seamless-immutable'
 import GroupDetailActions from '../Redux/GroupDetailRedux'
+import RecipArrActions from '../Redux/RecipArrRedux'
 // import I18n from 'react-native-i18n'
 
 // type GroupDetailsProps = {
@@ -110,7 +111,7 @@ class RecipientDetails extends React.Component {
             group.recipients.forEach(recip => {
               if (recip.id === this.props.recipient.id) {
                 recip.name = this.state.recipientName
-                recipInfo.contactInfo = this.state.contactInfo
+                recip.contactInfo = this.state.contactInfo
               }
             })
           }
@@ -120,7 +121,7 @@ class RecipientDetails extends React.Component {
         group.recipients.forEach(recip => {
           if (recip.id === this.props.recipient.id) {
             recip.name = this.state.recipientName
-            recipInfo.contactInfo = this.state.contactInfo
+            recip.contactInfo = this.state.contactInfo
           }
         })
         this.props.setGroup(group)
@@ -134,27 +135,30 @@ class RecipientDetails extends React.Component {
         recipInfo.name = this.state.recipientName
         recipInfo.contactInfo = this.state.contactInfo
         recipInfo.mediumType = this.props.group.mediumType
-        this.newRecipient(this.props.userId, recipInfo)
-        .then(res => {
-          var groups = Immutable.asMutable(this.props.groupsArr, {deep: true})
-          console.log('groups before = ', groups)
-          groups.forEach(group => {
-            if (this.props.groupId === group.groupId) {
-              group.recipients.push({
-                name: this.state.recipientName,
-                contactInfo: this.state.contactInfo
-              })
-            }
-          })
-          console.log('groups after = ', groups)
-          let group = Immutable.asMutable(this.props.group, {deep: true})
-          group.recipients.push({
-            name: this.state.recipientName,
-            contactInfo: this.state.contactInfo
-          })
-          this.props.setGroup(group)
-          this.props.updateGroupArr(groups)
+        var groups = Immutable.asMutable(this.props.groupsArr, {deep: true})
+        console.log('groups before = ', groups)
+        groups.forEach(group => {
+          if (this.props.groupId === group.groupId) {
+            group.recipients.push({
+              name: this.state.recipientName,
+              contactInfo: this.state.contactInfo
+            })
+          }
         })
+        console.log('groups after = ', groups)
+        let group = Immutable.asMutable(this.props.group, {deep: true})
+        group.recipients.push({
+          name: this.state.recipientName,
+          contactInfo: this.state.contactInfo
+        })
+        let newRecipArr = Immutable.asMutable(this.props.newRecipArr, {deep: true})
+        newRecipArr.push(recipInfo)
+        let addRecipArr = Immutable.asMutable(this.props.addRecipArr, {deep: true})
+        addRecipArr.push(recipInfo)
+        this.props.setAddRecipArr(addRecipArr)
+        this.props.setNewRecipArr(newRecipArr)
+        this.props.setGroup(group)
+        this.props.updateGroupArr(groups)
       }
     } else {
       let group = {recipients: []}
@@ -162,7 +166,17 @@ class RecipientDetails extends React.Component {
         name: this.state.recipientName,
         contactInfo: this.state.contactInfo
       })
+      let recipInfo = {}
+      recipInfo.name = this.state.recipientName
+      recipInfo.contactInfo = this.state.contactInfo
+      recipInfo.mediumType = null
       this.props.setGroup(group)
+      let newRecipArr = Immutable.asMutable(this.props.newRecipArr, {deep: true})
+      newRecipArr.push(recipInfo)
+      let addRecipArr = Immutable.asMutable(this.props.addRecipArr, {deep: true})
+      addRecipArr.push(recipInfo)
+      this.props.setAddRecipArr(addRecipArr)
+      this.props.setNewRecipArr(newRecipArr)
     }
   }
 
@@ -272,14 +286,18 @@ const mapStateToProps = (state) => {
     token: state.login.token,
     groupsArr: state.login.groups,
     groupId: state.group.group ? state.group.group.groupId : null,
-    userId: state.login.userId
+    userId: state.login.userId,
+    newRecipArr: state.recipArr.newRecipArr,
+    addRecipArr: state.recipArr.addRecipArr
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
     updateGroupArr: (groupArr) => dispatch(LoginActions.updateGroupArr(groupArr)),
-    setGroup: (group) => dispatch(GroupDetailActions.setGroup(group))
+    setGroup: (group) => dispatch(GroupDetailActions.setGroup(group)),
+    setNewRecipArr: (newRecipArr) => dispatch(RecipArrActions.setNewRecipArr(newRecipArr)),
+    setAddRecipArr: (addRecipArr) => dispatch(RecipArrActions.setAddRecipArr(addRecipArr))
   }
 }
 
