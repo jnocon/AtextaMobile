@@ -153,9 +153,6 @@ class RecipientDetails extends React.Component {
         })
         let newRecipArr = Immutable.asMutable(this.props.newRecipArr, {deep: true})
         newRecipArr.push(recipInfo)
-        let addRecipArr = Immutable.asMutable(this.props.addRecipArr, {deep: true})
-        addRecipArr.push(recipInfo)
-        this.props.setAddRecipArr(addRecipArr)
         this.props.setNewRecipArr(newRecipArr)
         this.props.setGroup(group)
         this.props.updateGroupArr(groups)
@@ -173,9 +170,6 @@ class RecipientDetails extends React.Component {
       this.props.setGroup(group)
       let newRecipArr = Immutable.asMutable(this.props.newRecipArr, {deep: true})
       newRecipArr.push(recipInfo)
-      let addRecipArr = Immutable.asMutable(this.props.addRecipArr, {deep: true})
-      addRecipArr.push(recipInfo)
-      this.props.setAddRecipArr(addRecipArr)
       this.props.setNewRecipArr(newRecipArr)
     }
   }
@@ -287,8 +281,7 @@ const mapStateToProps = (state) => {
     groupsArr: state.login.groups,
     groupId: state.group.group ? state.group.group.groupId : null,
     userId: state.login.userId,
-    newRecipArr: state.recipArr.newRecipArr,
-    addRecipArr: state.recipArr.addRecipArr
+    newRecipArr: state.recipArr.newRecipArr
   }
 }
 
@@ -296,8 +289,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     updateGroupArr: (groupArr) => dispatch(LoginActions.updateGroupArr(groupArr)),
     setGroup: (group) => dispatch(GroupDetailActions.setGroup(group)),
-    setNewRecipArr: (newRecipArr) => dispatch(RecipArrActions.setNewRecipArr(newRecipArr)),
-    setAddRecipArr: (addRecipArr) => dispatch(RecipArrActions.setAddRecipArr(addRecipArr))
+    setNewRecipArr: (newRecipArr) => dispatch(RecipArrActions.setNewRecipArr(newRecipArr))
   }
 }
 

@@ -10,6 +10,7 @@ import styles from './Styles/ListviewExampleStyle'
 import LoginActions from '../Redux/AuthRedux'
 import Immutable from 'seamless-immutable'
 import GroupDetailActions from '../Redux/GroupDetailRedux'
+import RecipArrActions from '../Redux/RecipArrRedux'
 
 class AddressBook extends React.Component {
   state: {
@@ -98,6 +99,9 @@ class AddressBook extends React.Component {
       name: recip.name,
       contactInfo: recip.contactInfo
     })
+    let addRecipArr = Immutable.asMutable(this.props.addRecipArr, {deep: true})
+    addRecipArr.push(recip)
+    this.props.setAddRecipArr(addRecipArr)
     this.props.setGroup(group)
     this.props.updateGroupArr(groups)
     NavigationActions.pop()
@@ -156,14 +160,16 @@ const mapStateToProps = (state) => {
     type: groupType,
     userId: state.login.userId,
     groupsArr: state.login.groups,
-    group: state.group.group
+    group: state.group.group,
+    addRecipArr: state.recipArr.addRecipArr
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
     updateGroupArr: (groupArr) => dispatch(LoginActions.updateGroupArr(groupArr)),
-    setGroup: (group) => dispatch(GroupDetailActions.setGroup(group))
+    setGroup: (group) => dispatch(GroupDetailActions.setGroup(group)),
+    setAddRecipArr: (addRecipArr) => dispatch(RecipArrActions.setAddRecipArr(addRecipArr))
   }
 }
 

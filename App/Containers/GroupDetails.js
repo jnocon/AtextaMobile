@@ -98,55 +98,85 @@ class GroupDetails extends React.Component {
 
   handleSaveDetails = () => {
     if (this.props.group) {
-      if ((this.state.groupName === this.props.group.name) === false) {
-        this.updateGroupNameUtil()
-      }
-      if (this.props.newRecipArr.length > 0) {
-        this.addNewRecipsUtil()
-      } else {
-        if (this.props.addRecipArr.length > 0) {
-          this.updateGroupRecipsUtil()
+      if (this.props.group.name) {
+        if ((this.state.groupName === this.props.group.name) === false) {
+          this.updateGroupNameUtil()
         }
+        if (this.props.newRecipArr.length > 0) {
+          this.addNewRecipsUtil()
+        } else {
+          if (this.props.addRecipArr.length > 0) {
+            let addArr = []
+            let temp = Immutable.asMutable(this.props.addRecipArr, {deep: true})
+            temp.forEach(recip => {
+              addArr.push(recip.id)
+            })
+            this.updateGroupRecipsUtil(addArr)
+          }
+        }
+      } else {
+        this.createNewGroupUtil()
       }
     // console.log('hi jesse = ', (this.state.messageName === this.props.message.commandName))
     } else {
-      let groupInfo = {}
-      groupInfo.name = this.state.groupName
-      groupInfo.userId = this.props.userId
-      groupInfo.mediumType = this.state.mediumType
-      this.createNewGroup(groupInfo, this.props.addRecipArr)
-      .then(result => result.json())
-      .then(result => {
-        console.log('hey jesse = ', result)
-        result.group.recipients = result.recipients
-        let groups = Immutable.asMutable(this.props.groupsArr, {deep: true})
-        groups.push(result.group)
-        this.props.setGroup(result.group)
-        this.props.setAddRecipArr([])
-        this.props.setNewRecipArr([])
-        this.props.updateGroupArr(groups)
-      })
+      this.createNewGroupUtil()
     }
+  }
+
+  createNewGroupUtil () {
+    console.log('should be here only')
+    let groupInfo = {}
+    groupInfo.name = this.state.groupName
+    groupInfo.userId = this.props.userId
+    groupInfo.mediumType = this.state.mediumType
+    let addArr = []
+    let temp = Immutable.asMutable(this.props.addRecipArr, {deep: true})
+    temp.forEach(recip => {
+      addArr.push(recip.id)
+    })
+    this.createNewGroup(groupInfo, this.props.newRecipArr, addArr)
+    .then(result => result.json())
+    .then(result => {
+      console.log('hey jesse = ', result)
+      result.group.recipients = result.recipients
+      result.group.groupId = result.group.id
+      let groups = Immutable.asMutable(this.props.groupsArr, {deep: true})
+      groups.push(result.group)
+      this.props.setGroup(result.group)
+      this.props.setAddRecipArr([])
+      this.props.setNewRecipArr([])
+      this.props.updateGroupArr(groups)
+    })
   }
 
   addNewRecipsUtil () {
     let arrToSend = Immutable.asMutable(this.props.newRecipArr, {deep: true})
-     console.log('hey gurl', arrToSend)
     this.addNewRecips(arrToSend)
     .then(res => res.json())
     .then(res => {
-      console.log('yooooooooo', res)
+      console.log(res)
+      let addArr = []
+      res.forEach(recip => {
+        addArr.push(recip.id)
+      })
+      if (this.props.addRecipArr.length > 0) {
+        let temp = Immutable.asMutable(this.props.addRecipArr, {deep: true})
+        temp.forEach(recip => {
+          addArr.push(recip.id)
+        })
+      }
+      this.updateGroupRecipsUtil(addArr)
     })
   }
 
-  updateGroupRecipsUtil () {
-    this.addNewRecips(this.props.group.groupId, this.props.addRecipArr)
+  updateGroupRecipsUtil (addArr) {
+    this.updateGroupRecips(this.props.group.groupId, addArr)
     .then(res => {
       this.props.setAddRecipArr([])
     })
   }
 
-  createNewGroup (groupInfo, newRecipArr) {
+  createNewGroup (groupInfo, newRecipArr, newAddArr) {
     return fetch('http://192.168.1.227:3000/groups/addGroup/', {
       method: 'POST',
       headers: {
@@ -157,7 +187,7 @@ class GroupDetails extends React.Component {
       body: JSON.stringify({
         'groupInfo': groupInfo,
         'newRecipients': newRecipArr,
-        'savedRecipients': []
+        'savedRecipients': newAddArr
       })
     })
   }
@@ -227,7 +257,7 @@ class GroupDetails extends React.Component {
         'userId': this.props.userId,
         'recipients': newRecipArr
       },
-       body: JSON.stringify({
+      body: JSON.stringify({
         'userId': this.props.userId,
         'recipients': newRecipArr
       })
