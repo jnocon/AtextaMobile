@@ -186,16 +186,43 @@ class MessageDetails extends React.Component {
     this.setState({ messageText: text })
   }
 
+  handleDelete () {
+    this.deleteMessage()
+    .then(res => {
+      let index
+      let messages = Immutable.asMutable(this.props.messagesArr, {deep: true})
+      for (var i = 0; i < messages.length; i++) {
+        if (messages[i].id === this.props.message.id) {
+          index = i
+        }
+      }
+      messages.splice(index, 1)
+      this.props.updateMessageArr(messages)
+      NavigationActions.pop()
+    })
+  }
+
+  deleteMessage () {
+    return fetch('http://192.168.1.227:3000/command/deleteCommand/' + this.props.message.id, {
+      method: 'DELETE',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': this.props.token
+      }
+    })
+  }
+
   creatNewMessage (newMessage) {
     return fetch('http://192.168.1.227:3000/command/newCommand/', {
-       method: 'Post',
-       headers: {
+      method: 'Post',
+      headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
         'Authorization': this.props.token
       },
-       body: JSON.stringify({newCommand: newMessage})
-     })
+      body: JSON.stringify({newCommand: newMessage})
+    })
   }
 
   updateMessageName (messageId, newName) {
@@ -215,17 +242,17 @@ class MessageDetails extends React.Component {
 
   updateMessageText (messageId, newMessage) {
     return fetch('http://192.168.1.227:3000/command/newMessage/', {
-       method: 'POST',
-       headers: {
+      method: 'POST',
+      headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
         'Authorization': this.props.token
       },
-       body: JSON.stringify({
+      body: JSON.stringify({
         'commandId': messageId,
         'newMessage': newMessage
       })
-     })
+    })
   }
 
   render () {
@@ -282,6 +309,11 @@ class MessageDetails extends React.Component {
             <TouchableOpacity style={Styles.loginButtonWrapper} onPress={this.handleSaveDetails}>
               <View style={Styles.loginButton}>
                 <Text style={Styles.loginText}>Save Message</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity style={Styles.loginButtonWrapper} onPress={this.handleDelete.bind(this)}>
+              <View style={Styles.loginButton}>
+                <Text style={Styles.loginText}>Delete Message</Text>
               </View>
             </TouchableOpacity>
           </View>

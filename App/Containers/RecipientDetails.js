@@ -204,6 +204,46 @@ class RecipientDetails extends React.Component {
     })
   }
 
+  handleRemove () {
+    let index
+    let group = Immutable.asMutable(this.props.group, {deep: true})
+    for (var i = 0; i < group.recipients.length; i++) {
+      if (group.recipients[i].id === this.props.recipient.id) {
+        index = i
+      }
+    }
+    group.recipients.splice(index, 1)
+    this.props.setGroup(group)
+    NavigationActions.pop()
+  }
+
+  handleDelete () {
+    this.deleteRecip()
+    .then(res => {
+      let index
+      let group = Immutable.asMutable(this.props.group, {deep: true})
+      for (var i = 0; i < group.recipients.length; i++) {
+        if (group.recipients[i].id === this.props.recipient.id) {
+          index = i
+        }
+      }
+      group.recipients.splice(index, 1)
+      this.props.setGroup(group)
+      NavigationActions.pop()
+    })
+  }
+
+  deleteRecip () {
+    return fetch('http://192.168.1.227:3000/groups/recipient/' + this.props.recipient.id, {
+      method: 'DELETE',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': this.props.token
+      }
+    })
+  }
+
   handleChangeRecipientName = (text) => {
     this.setState({ recipientName: text })
   }
@@ -264,7 +304,17 @@ class RecipientDetails extends React.Component {
                 <Text style={Styles.loginText}>Save Recipient</Text>
               </View>
             </TouchableOpacity>
+            <TouchableOpacity style={Styles.loginButtonWrapper} onPress={this.handleSaveDetails}>
+              <View style={Styles.loginButton}>
+                <Text style={Styles.loginText}>Remove Recipient From Group</Text>
+              </View>
+            </TouchableOpacity>
           </View>
+          <TouchableOpacity style={Styles.loginButtonWrapper} onPress={this.handleDelete.bind(this)}>
+            <View style={Styles.loginButton}>
+              <Text style={Styles.loginText}>Delete Recipient Forever!</Text>
+            </View>
+          </TouchableOpacity>
         </View>
 
       </ScrollView>
