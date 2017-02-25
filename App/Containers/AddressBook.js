@@ -5,9 +5,12 @@ import { View, Text, ListView, TouchableOpacity } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions } from 'react-native-router-flux'
 // For empty lists
-import AlertMessage from '../Components/AlertMessage'
 // Styles
 import styles from './Styles/ListviewExampleStyle'
+import LoginActions from '../Redux/AuthRedux'
+import Immutable from 'seamless-immutable'
+import GroupDetailActions from '../Redux/GroupDetailRedux'
+import RecipArrActions from '../Redux/RecipArrRedux'
 
 class AddressBook extends React.Component {
   state: {
@@ -26,15 +29,9 @@ class AddressBook extends React.Component {
     // DataSource configured
     const ds = new ListView.DataSource({rowHasChanged})
 
-    const dataObjects = [
-        {name: 'Daniel'},
-        {name: 'Jesse'},
-        {name: 'Ricky'},
-        {name: 'Sean'}
-    ]
     // Datasource is always in state
     this.state = {
-      dataSource: ds.cloneWithRows(dataObjects)
+      dataSource: ds.cloneWithRows([])
     }
   }
 
@@ -47,7 +44,7 @@ class AddressBook extends React.Component {
   *************************************************************/
   renderRow (rowData) {
     return (
-      <TouchableOpacity onPress={NavigationActions.pop}>
+      <TouchableOpacity onPress={() => this.clickRecip(rowData)}>
         <View style={styles.row}>
           <Text style={styles.boldLabel}>{rowData.name}</Text>
         </View>
@@ -56,7 +53,7 @@ class AddressBook extends React.Component {
   }
 
   componentDidMount () {
-      this.getAddressBook(this.props.token, this.props.userId, this.props.groupId, this.props.type)
+    this.getAddressBook(this.props.token, this.props.userId, this.props.groupId, this.props.type)
       .then(result => {
         console.log('AddressBook = ', result)
         var res = result
@@ -69,21 +66,46 @@ class AddressBook extends React.Component {
         })
       })
       .catch(error => {
-        console.log("error in addressBookGet = ", error)
+        console.log('error in addressBookGet = ', error)
       })
-    }
+  }
 
-    getAddressBook(token, userId, groupId, type) {
-      console.log("hi ricky = ", token, userId, groupId, type)
-      return fetch('http://192.168.1.227:3000/groups/availableRecipients/' + userId + '/' + groupId + '/' + type, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': token
-        }
-      })
-    }
+  getAddressBook (token, userId, groupId, type) {
+    console.log('hi ricky = ', token, userId, groupId, type)
+    return fetch('http://192.168.1.227:3000/groups/availableRecipients/' + userId + '/' + groupId + '/' + type, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': token
+      }
+    })
+  }
+
+  clickRecip (recip) {
+    var groups = Immutable.asMutable(this.props.groupsArr, {deep: true})
+    console.log('groups before = ', groups)
+    groups.forEach(group => {
+      if (this.props.groupId === group.groupId) {
+        group.recipients.push({
+          name: recip.name,
+          contactInfo: recip.contactInfo
+        })
+      }
+    })
+    console.log('groups after = ', groups)
+    let group = Immutable.asMutable(this.props.group, {deep: true})
+    group.recipients.push({
+      name: recip.name,
+      contactInfo: recip.contactInfo
+    })
+    let addRecipArr = Immutable.asMutable(this.props.addRecipArr, {deep: true})
+    addRecipArr.push(recip)
+    this.props.setAddRecipArr(addRecipArr)
+    this.props.setGroup(group)
+    this.props.updateGroupArr(groups)
+    NavigationActions.pop()
+  }
 
   /* ***********************************************************
   * If your datasource is driven by Redux, you'll need to
@@ -114,7 +136,7 @@ class AddressBook extends React.Component {
         <ListView
           contentContainerStyle={styles.listContent}
           dataSource={this.state.dataSource}
-          renderRow={this.renderRow}
+          renderRow={this.renderRow.bind(this)}
           pageSize={15}
           enableEmptySections
         />
@@ -124,10 +146,10 @@ class AddressBook extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-  let groupNumber = 0;
-  let groupType = 0;
+  let groupNumber = 0
+  let groupType = 0
   if (state.group.group === undefined) {
-    groupType = 'T'
+    groupType = 0
   } else {
     groupNumber = state.group.group.groupId
     groupType = state.group.group.mediumType
@@ -136,8 +158,19 @@ const mapStateToProps = (state) => {
     token: state.login.token,
     groupId: groupNumber,
     type: groupType,
-    userId: state.login.userId
+    userId: state.login.userId,
+    groupsArr: state.login.groups,
+    group: state.group.group,
+    addRecipArr: state.recipArr.addRecipArr
   }
 }
 
-export default connect(mapStateToProps)(AddressBook)
+const mapDispatchToProps = (dispatch) => {
+  return {
+    updateGroupArr: (groupArr) => dispatch(LoginActions.updateGroupArr(groupArr)),
+    setGroup: (group) => dispatch(GroupDetailActions.setGroup(group)),
+    setAddRecipArr: (addRecipArr) => dispatch(RecipArrActions.setAddRecipArr(addRecipArr))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(AddressBook)

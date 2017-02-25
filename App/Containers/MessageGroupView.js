@@ -56,12 +56,10 @@ class MessageGroupView extends React.Component {
   *************************************************************/
   renderRow (rowData) {
     return (
-      <TouchableOpacity onPress={NavigationActions.groupDetails}>
         <View style={styles.row}>
           <Text style={styles.boldLabel}>{rowData.groupName}</Text>
           <Text style={styles.label}>{rowData.mediumType}</Text>
         </View>
-      </TouchableOpacity>
     )
   }
 

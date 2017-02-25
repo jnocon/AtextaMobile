@@ -6,6 +6,7 @@ import { connect } from 'react-redux'
 import RoundedButton from '../Components/RoundedButton'
 import { Actions as NavigationActions } from 'react-native-router-flux'
 import GroupDetailActions from '../Redux/GroupDetailRedux'
+import RecipArrActions from '../Redux/RecipArrRedux'
 
 // For empty lists
 import AlertMessage from '../Components/AlertMessage'
@@ -93,20 +94,24 @@ class GroupsList extends React.Component {
         dataSource: this.state.dataSource.cloneWithRows(newProps.groups)
       })
     }
-}
+  }
 
   noRowData () {
     return this.state.dataSource.getRowCount() === 0
   }
 
   clickGroup (group) {
-      console.log("hi jesse= ", group)
-      this.props.setGroup(group)
-      NavigationActions.groupDetails()
-    }
-  
+    console.log('hi jesse= ', group)
+    this.props.setGroup(group)
+    this.props.setAddRecipArr([])
+    this.props.setNewRecipArr([])
+    NavigationActions.groupDetails()
+  }
+
   createNewGroup () {
     this.props.setGroup(undefined)
+    this.props.setAddRecipArr([])
+    this.props.setNewRecipArr([])
     NavigationActions.groupDetails()
   }
 
@@ -136,7 +141,9 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    setGroup: (group) => dispatch(GroupDetailActions.setGroup(group))
+    setGroup: (group) => dispatch(GroupDetailActions.setGroup(group)),
+    setNewRecipArr: (newRecipArr) => dispatch(RecipArrActions.setNewRecipArr(newRecipArr)),
+    setAddRecipArr: (addRecipArr) => dispatch(RecipArrActions.setAddRecipArr(addRecipArr))
   }
 }
 
