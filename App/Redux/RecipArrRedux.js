@@ -7,9 +7,9 @@ import Immutable from 'seamless-immutable'
 /* ------------- Types and Action Creators ------------- */
 
 const { Types, Creators } = createActions({
-  setGroup: ['group'],
   setNewRecipArr: ['newRecipArr'],
-  setAddRecipArr: ['addRecipArr']
+  setAddRecipArr: ['addRecipArr'],
+  setRemoveRecipArr: ['removeRecipArr']
 })
 
 export const RecipArrTypes = Types
@@ -19,7 +19,8 @@ export default Creators
 
 export const INITIAL_STATE = Immutable({
   newRecipArr: [],
-  addRecipArr: []
+  addRecipArr: [],
+  removeRecipArr: []
 })
 
 /* ------------- Reducers ------------- */
@@ -32,10 +33,14 @@ export const setNewRecipArr = (state: Object, { newRecipArr }: Object) =>
 export const setAddRecipArr = (state: Object, { addRecipArr }: Object) =>
   state.merge({addRecipArr})
 
+export const setRemoveRecipArr = (state: Object, { removeRecipArr }: Object) =>
+  state.merge({removeRecipArr})
+
 
 /* ------------- Hookup Reducers To Types ------------- */
 
 export const reducer = createReducer(INITIAL_STATE, {
   [Types.SET_NEW_RECIP_ARR]: setNewRecipArr,
-  [Types.SET_ADD_RECIP_ARR]: setAddRecipArr
+  [Types.SET_ADD_RECIP_ARR]: setAddRecipArr,
+  [Types.SET_REMOVE_RECIP_ARR]: setRemoveRecipArr
 })

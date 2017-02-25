@@ -200,6 +200,33 @@ class GroupDetails extends React.Component {
     this.setState({ mediumType: text })
   }
 
+  handleDelete () {
+    this.deleteGroup()
+    .then(res => {
+      let index
+      let groups = Immutable.asMutable(this.props.groupsArr, {deep: true})
+      for (var i = 0; i < groups.length; i++) {
+        if (groups[i].groupId === this.props.group.groupId) {
+          index = i
+        }
+      }
+      groups.splice(index, 1)
+      this.props.updateGroupArr(groups)
+      NavigationActions.pop()
+    })
+  }
+
+  deleteGroup () {
+    return fetch('http://192.168.1.227:3000/groups/deleteGroup/' + this.props.group.groupId, {
+      method: 'DELETE',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': this.props.token
+      }
+    })
+  }
+
   updateGroupNameUtil () {
     this.updateGroupName(this.props.group.groupId, this.state.groupName)
     .then(result => result.json())
@@ -320,6 +347,11 @@ class GroupDetails extends React.Component {
               </View>
             </TouchableOpacity>
           </View>
+          <TouchableOpacity style={Styles.loginButtonWrapper} onPress={this.handleDelete.bind(this)}>
+            <View style={Styles.loginButton}>
+              <Text style={Styles.loginText}>Delete Group Forever</Text>
+            </View>
+          </TouchableOpacity>
         </View>
 
       </ScrollView>
