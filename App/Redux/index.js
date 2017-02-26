@@ -13,7 +13,8 @@ export default () => {
     message: require('./MessageDetailRedux').reducer,
     group: require('./GroupDetailRedux').reducer,
     recipient: require('./RecipDetailRedux').reducer,
-    recipArr: require('./RecipArrRedux').reducer
+    recipArr: require('./RecipArrRedux').reducer,
+    secret: require('./SecretDetailRedux').reducer
   })
 
   return configureStore(rootReducer, rootSaga)
