@@ -8,6 +8,7 @@ import {
   TextInput,
   TouchableOpacity,
   Keyboard,
+  Picker,
   LayoutAnimation
 } from 'react-native'
 import { connect } from 'react-redux'
@@ -196,8 +197,8 @@ class GroupDetails extends React.Component {
     this.setState({ groupName: text })
   }
 
-  handleChangeMediumType= (text) => {
-    this.setState({ mediumType: text })
+  handleChangeMediumType= (value) => {
+    this.setState({ mediumType: value })
   }
 
   handleDelete () {
@@ -292,7 +293,7 @@ class GroupDetails extends React.Component {
   }
 
   render () {
-    const { groupName, method } = this.state
+    const { groupName, mediumType } = this.state
     let edit = true
     if (this.props.group) {
       edit = false
@@ -318,22 +319,24 @@ class GroupDetails extends React.Component {
               placeholder='Put Group Name Here' />
           </View>
 
-          <View style={Styles.row}>
-            <Text style={Styles.rowLabel}>{I18n.t('Method')}</Text>
-            <TextInput
-              ref='method'
-              style={textInputStyle}
-              value={method}
-              editable={edit}
-              keyboardType='default'
-              returnKeyType='go'
-              autoCapitalize='none'
-              autoCorrect={false}
-              onChangeText={this.handleChangeMediumType}
-              underlineColorAndroid='transparent'
-              onSubmitEditing={this.handleSaveDetails}
-              placeholder='Text, Slack, Email' />
-          </View>
+          {this.props.group
+            ? <View style={Styles.row}>
+              <Text style={Styles.rowLabel}>{I18n.t('Method')}</Text>
+              <Text style={Styles.textInput}>
+                {mediumType}
+              </Text>
+            </View>
+
+            : <View style={Styles.row}>
+              <Text style={Styles.rowLabel}>Alexa Command</Text>
+              <Picker
+                selectedValue={this.state.mediumType}
+                onValueChange={(value) => this.setState({mediumType: value})}>
+                <Picker.Item label='Text Message' value='T' />
+                <Picker.Item label='Email' value='E' />
+                <Picker.Item label='Slack' value='S' />
+              </Picker>
+            </View>}
 
           <View style={Styles.row}>
             <Text style={Styles.rowLabel}>Message Recipients</Text>
@@ -368,6 +371,7 @@ const mapStateToProps = (state) => {
     groupsArr: state.login.groups,
     newRecipArr: state.recipArr.newRecipArr,
     addRecipArr: state.recipArr.addRecipArr,
+    removeRecipArr: state.recipArr.removeRecipArr,
     userId: state.login.userId
   }
 }
@@ -377,7 +381,8 @@ const mapDispatchToProps = (dispatch) => {
     updateGroupArr: (groupArr) => dispatch(LoginActions.updateGroupArr(groupArr)),
     setGroup: (group) => dispatch(GroupDetailActions.setGroup(group)),
     setNewRecipArr: (newRecipArr) => dispatch(RecipArrActions.setNewRecipArr(newRecipArr)),
-    setAddRecipArr: (addRecipArr) => dispatch(RecipArrActions.setAddRecipArr(addRecipArr))
+    setAddRecipArr: (addRecipArr) => dispatch(RecipArrActions.setAddRecipArr(addRecipArr)),
+    setRemoveRecipArr: (removeRecipArr) => dispatch(RecipArrActions.setAddRecipArr(removeRecipArr))
   }
 }
 

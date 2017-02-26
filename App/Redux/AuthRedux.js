@@ -7,7 +7,7 @@ import Immutable from 'seamless-immutable'
 /* ------------- Types and Action Creators ------------- */
 
 const { Types, Creators } = createActions({
-  setUserData: ['userId', 'messages', 'groups', 'token', 'loggedIn'],
+  setUserData: ['userId', 'messages', 'groups', 'secretMessages', 'token', 'loggedIn'],
   updateMessageArr: ['messages'],
   updateGroupArr: ['groups'],
   logout: null
@@ -22,6 +22,7 @@ export const INITIAL_STATE = Immutable({
   userId: null,
   messages: [],
   groups: [],
+  secretMessages: [],
   token: null,
   loggedIn: false
 })
@@ -29,8 +30,8 @@ export const INITIAL_STATE = Immutable({
 /* ------------- Reducers ------------- */
 
 //  we've successfully logged in
-export const setUserData = (state: Object, { userId, messages, groups, token, loggedIn }: Object) =>
-  state.merge({userId, messages, groups, token, loggedIn})
+export const setUserData = (state: Object, { userId, messages, groups, secretMessages, token, loggedIn }: Object) =>
+  state.merge({userId, messages, groups, secretMessages, token, loggedIn})
 
 export const updateMessageArr = (state: Object, { messages }: Object) =>
   state.merge({messages})

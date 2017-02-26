@@ -5,15 +5,12 @@ import { View, ListView, Text, TouchableOpacity } from 'react-native'
 import { connect } from 'react-redux'
 import RoundedButton from '../Components/RoundedButton'
 import { Actions as NavigationActions } from 'react-native-router-flux'
-import MessageDetailActions from '../Redux/MessageDetailRedux'
-
-// For empty lists
-import AlertMessage from '../Components/AlertMessage'
+import SecretDetailActions from '../Redux/SecretDetailRedux'
 
 // Styles
 import styles from './Styles/ListviewExampleStyle'
 
-class MessagesList extends React.Component {
+class SecretMessagesList extends React.Component {
 
   state: {
     dataSource: Object
@@ -67,38 +64,39 @@ class MessagesList extends React.Component {
     }
   }
 
-  // componentDidMount = () => {
-  //   console.log('CDM messagesList')
-  //     this.getMessages(this.props.userId)
-  //     .then(result => {
-  //       console.log('messageslist = ', result)
-  //       var res = result
-  //       return res.json()
-  //     })
-  //     .then(result => {
-  //       console.log('messages list = ', result)
-  //       var data = {
-  //         Text: result
-  //       }
-  //       this.setState({
-  //         dataSource: this.state.dataSource.cloneWithRowsAndSections(data)
-  //       })
-  //     })
-  //     .catch(error => {
-  //       console.log("error in messagesListGet = ", error)
-  //     })
-  //   }
+//   componentDidMount = () => {
+//     console.log('CDM messagesList', this.props)
+//     this.getSecretMessages(this.props.userId)
+//       .then(result => {
+//         console.log('messageslist = ', result)
+//         var res = result
+//         return res.json()
+//       })
+//       .then(result => {
+//         console.log('messages list = ', result)
+//         var data = {
+//           Text: result
+//         }
+//         this.setState({
+//           dataSource: this.state.dataSource.cloneWithRowsAndSections(data)
+//         })
+//       })
+//       .catch(error => {
+//         console.log('error in messagesListGet = ', error)
+//       })
+//   }
 
-  getMessages (userId) {
-    return fetch('http://192.168.1.227:3000/command/userCommands/' + userId, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      }
+//   getSecretMessages (userId) {
+//     return fetch('http://192.168.1.227:3000/secretCommand/userCommands/' + userId, {
+//       method: 'GET',
+//       headers: {
+//         'Accept': 'application/json',
+//         'Content-Type': 'application/json',
+//         'Authentication': this.props.token
+//       }
 
-    })
-  }
+//     })
+//   }
 
   renderRow (rowData, sectionID) {
     // You can condition on sectionID (key as string), for different cells
@@ -136,7 +134,7 @@ class MessagesList extends React.Component {
 
   clickMessage (message) {
     this.props.setMessage(message)
-    NavigationActions.messageDetails()
+    NavigationActions.secretMessageDetails()
   }
 
   renderHeader (data, sectionID) {
@@ -154,7 +152,7 @@ class MessagesList extends React.Component {
 
   createNewMessage () {
     this.props.setMessage(undefined)
-    NavigationActions.messageDetails()
+    NavigationActions.secretMessageDetails()
   }
 
   render () {
@@ -168,7 +166,7 @@ class MessagesList extends React.Component {
           enableEmptySections
         />
         <RoundedButton onPress={this.createNewMessage.bind(this)}>
-            Create New Message
+            Create New Secret Message
         </RoundedButton>
       </View>
     )
@@ -176,21 +174,21 @@ class MessagesList extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-  console.log('heye jessse = ', state.login.messages)
+  console.log('heye jessse = ', state.login.secretMessages)
   var textArr = []
   var slackArr = []
   var emailArr = []
   var blankArr = []
-  for (let el of state.login.messages) {
+  for (let el of state.login.secretMessages) {
     if (el.mediumType === 'T') {
       textArr.push(el)
     } else if (el.mediumType === 'S') {
       slackArr.push(el)
     } else if (el.mediumType === 'E') {
-       emailArr.push(el)
-     } else {
-       blankArr.push(el)
-     }
+      emailArr.push(el)
+    } else {
+      blankArr.push(el)
+    }
   }
   let data = {}
   if (textArr.length !== 0) {
@@ -214,8 +212,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    setMessage: (message) => dispatch(MessageDetailActions.setMessage(message))
+    setMessage: (message) => dispatch(SecretDetailActions.setMessage(message))
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(MessagesList)
+export default connect(mapStateToProps, mapDispatchToProps)(SecretMessagesList)

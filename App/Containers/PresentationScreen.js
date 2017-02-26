@@ -26,15 +26,15 @@ export default class PresentationScreen extends React.Component {
           </View>
 
           <RoundedButton onPress={NavigationActions.messagesList}>
-           Messages
+           Quick Messages
           </RoundedButton>
 
           <RoundedButton onPress={NavigationActions.groupsList}>
             Groups
           </RoundedButton>
 
-          <RoundedButton onPress={NavigationActions.auth0}>
-            Tutorial
+          <RoundedButton onPress={NavigationActions.secretMessagesList}>
+            Secret Messages
           </RoundedButton>
 
           <View style={styles.centered}>

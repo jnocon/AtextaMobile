@@ -44,9 +44,9 @@ class SecretMessageDetails extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      messageName: null,
-      method: null,
-      command: 'Play My Favorite Song',
+      messageName: this.props.message ? this.props.message.name : null,
+      messageText: this.props.message ? this.props.message.text : null,
+      alexaResponse: this.props.message ? this.props.message.speech : null,
       visibleHeight: Metrics.screenHeight,
       topLogo: { width: Metrics.screenWidth }
     }
@@ -108,55 +108,67 @@ class SecretMessageDetails extends React.Component {
   }
 
   render () {
-    const { messageName, method } = this.state
+    const { messageName, messageText, alexaResponse } = this.state
     const { fetching } = this.props
     const editable = !fetching
     const textInputStyle = editable ? Styles.textInput : Styles.textInputReadonly
     return (
-      <ScrollView contentContainerStyle={{justifyContent: 'center'}} style={[Styles.container, {height: this.state.visibleHeight}]} keyboardShouldPersistTaps>
+      <ScrollView contentContainerStyle={{justifyContent: 'center'}} style={[Styles.container, {height: this.state.visibleHeight}]} keyboardShouldPersistTaps='always'>
         <View style={Styles.form}>
-          <View style={Styles.row}>
-            <Text style={Styles.rowLabel}>Secret Message Name</Text>
-            <TextInput
-              ref='messageName'
-              style={textInputStyle}
-              value={messageName}
-              editable={editable}
-              keyboardType='default'
-              returnKeyType='next'
-              autoCapitalize='none'
-              autoCorrect={false}
-              onChangeText={this.handleChangemessageName}
-              underlineColorAndroid='transparent'
-              onSubmitEditing={() => this.refs.method.focus()}
-              placeholder='Put Group Name Here' />
-          </View>
+
+          {this.props.message ?
+            <View style={Styles.row}>
+              <Text style={Styles.rowLabel}>Alexa Command</Text>
+              <Picker
+                selectedValue={this.state.messageName}
+                onValueChange={(value) => this.setState({messageName: value})}>
+                <Picker.Item label={this.state.messageName} value={this.state.messageName} />
+                <Picker.Item label='How Far Is The Train Station' value='How Far Is The Train Station' />
+              </Picker>
+            </View>
+            : <View style={Styles.row}>
+              <Text style={Styles.rowLabel}>Alexa Command</Text>
+              <Picker
+                selectedValue={this.state.messageName}
+                onValueChange={(value) => this.setState({messageName: value})}>
+                <Picker.Item label={'Play My Favorite Song'} value='Play My Favorite Song' />
+                <Picker.Item label='How Far Is The Train Station' value='How Far Is The Train Station' />
+              </Picker>
+            </View>
+        }
 
           <View style={Styles.row}>
-            <Text style={Styles.rowLabel}>Method</Text>
+            <Text style={Styles.rowLabel}>Alexa's' Response</Text>
             <TextInput
-              ref='method'
+              ref='alexaResponse'
               style={textInputStyle}
-              value={method}
-              editable={editable}
+              value={alexaResponse}
+              editable
               keyboardType='default'
               returnKeyType='go'
               autoCapitalize='none'
               autoCorrect={false}
-              onChangeText={this.handleChangemethod}
+              onChangeText={this.handleChangeResponse}
               underlineColorAndroid='transparent'
-              onSubmitEditing={this.handleSaveDetails}
-              placeholder='Text, Slack, Email' />
+              onSubmitEditing={this.handleSaveDetails.bind(this)}
+              placeholder='Whatever your heart desires' />
           </View>
 
           <View style={Styles.row}>
-            <Text style={Styles.rowLabel}>Choose Command</Text>
-            <Picker
-              selectedValue={this.state.command}
-              onValueChange={this.handleChangemethod}>
-              <Picker.Item label='Play My Favorite Song' value='Play My Favorite Song' />
-              <Picker.Item label='How Far Is The Train Station' value='How Far Is The Train Station' />
-            </Picker>
+            <Text style={Styles.rowLabel}>Message Content</Text>
+            <TextInput
+              ref='messageText'
+              style={textInputStyle}
+              value={messageText}
+              editable
+              keyboardType='default'
+              returnKeyType='go'
+              autoCapitalize='none'
+              autoCorrect={false}
+              onChangeText={this.handleChangeMessageText}
+              underlineColorAndroid='transparent'
+              onSubmitEditing={this.handleSaveDetails.bind(this)}
+              placeholder='I am in trouble, come over now!' />
           </View>
 
           <View style={Styles.row}>
@@ -181,7 +193,10 @@ class SecretMessageDetails extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    // fetching: state.login.fetching
+    message: state.secret.message,
+    token: state.login.token,
+    messagesArr: state.login.secretMessages,
+    userId: state.login.userId
   }
 }
 

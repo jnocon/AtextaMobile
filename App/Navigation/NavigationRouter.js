@@ -28,6 +28,7 @@ import MessageDetails from '../Containers/MessageDetails'
 import SecretMessageDetails from '../Containers/SecretMessageDetails'
 import GroupChooseView from '../Containers/GroupChooseView'
 import AddressBook from '../Containers/AddressBook'
+import SecretMessagesList from '../Containers/SecretMessagesList'
 
 /* **************************
 * Documentation: https://github.com/aksonov/react-native-router-flux
@@ -41,7 +42,7 @@ export default class NavigationRouter extends Component {
           <Scene key='drawerChildrenWrapper' navigationBarStyle={Styles.navBar} titleStyle={Styles.title} leftButtonIconStyle={Styles.leftButton} rightButtonTextStyle={Styles.rightButton}>
             <Scene initial key='presentationScreen' component={PresentationScreen} title='Atexta' />
             <Scene key='groupsList' component={GroupsList} title='Groups' />
-            <Scene key='messagesList' component={MessagesList} title='Messages' />
+            <Scene key='messagesList' component={MessagesList} title='Quick Messages' />
             <Scene key='componentExamples' component={AllComponentsScreen} title='Components' />
             <Scene key='usageExamples' component={UsageExamplesScreen} title='Usage' rightTitle='Example' onRight={() => window.alert('Example Pressed')} />
             <Scene key='login' component={LoginScreen} title='Login' hideNavBar />
@@ -58,6 +59,8 @@ export default class NavigationRouter extends Component {
             <Scene key='secretMessageDetails' component={SecretMessageDetails} title='Secret Message Details' />
             <Scene key='groupChooseView' component={GroupChooseView} title='Choose Group' />
             <Scene key='addressBook' component={AddressBook} title='Address Book' />
+            <Scene key='secretMessagesList' component={SecretMessagesList} title='Secret Messages' />
+
 
             {/* Custom navigation bar example */}
             <Scene key='deviceInfo' component={DeviceInfoScreen} title='Device Info' />

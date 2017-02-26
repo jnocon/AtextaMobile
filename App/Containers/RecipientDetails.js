@@ -204,17 +204,44 @@ class RecipientDetails extends React.Component {
     })
   }
 
-  handleRemove () {
-    let index
-    let group = Immutable.asMutable(this.props.group, {deep: true})
-    for (var i = 0; i < group.recipients.length; i++) {
-      if (group.recipients[i].id === this.props.recipient.id) {
-        index = i
+  removeRecip () {
+    return fetch('http://192.168.1.227:3000/groups/groupRecipient/' + this.props.group.groupId + '/' + this.props.recipient.id, {
+      method: 'DELETE',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': this.props.token
       }
-    }
-    group.recipients.splice(index, 1)
-    this.props.setGroup(group)
-    NavigationActions.pop()
+    })
+  }
+
+  handleRemove () {
+    this.removeRecip()
+    .then(res => {
+      let index
+      let group = Immutable.asMutable(this.props.group, {deep: true})
+      for (var i = 0; i < group.recipients.length; i++) {
+        if (group.recipients[i].id === this.props.recipient.id) {
+          index = i
+        }
+      }
+      group.recipients.splice(index, 1)
+      this.props.setGroup(group)
+      var groups = Immutable.asMutable(this.props.groupsArr, {deep: true})
+      let groupJ
+      let recipG
+      for (var j = 0; j < groups.length; j++) {
+        for (var g = 0; g < groups[j].recipients.length; g++) {
+          if (groups[j].recipients[g].id === this.props.recipient.id) {
+            groupJ = j
+            recipG = g
+          }
+        }
+      }
+      groups[groupJ].recipients.splice(recipG, 1)
+      this.props.updateGroupArr(groups)
+      NavigationActions.pop()
+    })
   }
 
   handleDelete () {
@@ -304,7 +331,7 @@ class RecipientDetails extends React.Component {
                 <Text style={Styles.loginText}>Save Recipient</Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity style={Styles.loginButtonWrapper} onPress={this.handleSaveDetails}>
+            <TouchableOpacity style={Styles.loginButtonWrapper} onPress={this.handleRemove.bind(this)}>
               <View style={Styles.loginButton}>
                 <Text style={Styles.loginText}>Remove Recipient From Group</Text>
               </View>
@@ -331,7 +358,8 @@ const mapStateToProps = (state) => {
     groupsArr: state.login.groups,
     groupId: state.group.group ? state.group.group.groupId : null,
     userId: state.login.userId,
-    newRecipArr: state.recipArr.newRecipArr
+    newRecipArr: state.recipArr.newRecipArr,
+    removeArr: state.recipArr.removeRecipArr
   }
 }
 
@@ -339,7 +367,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     updateGroupArr: (groupArr) => dispatch(LoginActions.updateGroupArr(groupArr)),
     setGroup: (group) => dispatch(GroupDetailActions.setGroup(group)),
-    setNewRecipArr: (newRecipArr) => dispatch(RecipArrActions.setNewRecipArr(newRecipArr))
+    setNewRecipArr: (newRecipArr) => dispatch(RecipArrActions.setNewRecipArr(newRecipArr)),
+    setRemoveRecipArr: (removeRecipArr) => dispatch(RecipArrActions.setRemoveRecipArr(removeRecipArr))
   }
 }
 

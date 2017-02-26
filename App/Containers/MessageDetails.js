@@ -295,10 +295,13 @@ class MessageDetails extends React.Component {
               onSubmitEditing={this.handleSaveDetails}
               placeholder='Running late; Be there when I can!!!' />
           </View>
-
-          <View style={Styles.row}>
-            <Text style={Styles.rowLabel}>Command</Text>
-          </View>
+          {this.props.message
+            ? <View style={Styles.row}>
+              <Text style={Styles.rowLabel}>Command</Text>
+              <Text style={Styles.textInput}>Alexa Open Atexta...</Text>
+              <Text style={Styles.textInput}>Alexa Send Quick Message {messageName}</Text>
+            </View>
+          : <View />}
 
           <View style={Styles.row}>
             <Text style={Styles.rowLabel}>Message Group</Text>
