@@ -51,7 +51,7 @@ class GroupDetails extends React.Component {
     console.log('props in groupDetails = ', this.props)
     this.state = {
       groupName: this.props.group ? this.props.group.name : null,
-      mediumType: this.props.group ? this.props.group.mediumType : null,
+      mediumType: this.props.group ? this.props.group.mediumType : 'T',
       visibleHeight: Metrics.screenHeight,
       topLogo: { width: Metrics.screenWidth }
     }
@@ -130,6 +130,7 @@ class GroupDetails extends React.Component {
     groupInfo.name = this.state.groupName
     groupInfo.userId = this.props.userId
     groupInfo.mediumType = this.state.mediumType
+    console.log('group mediumType = ', this.state.mediumType)
     let addArr = []
     let temp = Immutable.asMutable(this.props.addRecipArr, {deep: true})
     temp.forEach(recip => {
@@ -178,6 +179,7 @@ class GroupDetails extends React.Component {
   }
 
   createNewGroup (groupInfo, newRecipArr, newAddArr) {
+    console.log('hi jesse groupInfo= ', groupInfo)
     return fetch('http://192.168.1.227:3000/groups/addGroup/', {
       method: 'POST',
       headers: {
@@ -328,7 +330,7 @@ class GroupDetails extends React.Component {
             </View>
 
             : <View style={Styles.row}>
-              <Text style={Styles.rowLabel}>Alexa Command</Text>
+              <Text style={Styles.rowLabel}>Medium Type</Text>
               <Picker
                 selectedValue={this.state.mediumType}
                 onValueChange={(value) => this.setState({mediumType: value})}>
