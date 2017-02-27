@@ -14,15 +14,13 @@
  import Auth0Lock from 'react-native-lock'
  import styles from './Styles/PresentationScreenStyle'
  import { Images } from '../Themes'
+ import credentials from './Config/AuthOCredentials.js'
 
  class WelcomeView extends Component {
 
    _onLogin = () => {
      var context = this
-     let lock = new Auth0Lock({
-       clientId: 'HFYDMTRU6gcORtnREZaFudRLO0f1FSwM',
-       domain: 'rakan.auth0.com'
-     })
+     let lock = new Auth0Lock(credentials)
      console.log('here?', lock)
      lock.show({
        closable: true
