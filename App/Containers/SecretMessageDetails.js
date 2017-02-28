@@ -15,7 +15,7 @@ import { connect } from 'react-redux'
 import Styles from './Styles/LoginScreenStyle'
 import {Metrics} from '../Themes'
 import { Actions as NavigationActions } from 'react-native-router-flux'
-import MessageGroupView from './MessageGroupView'
+import SecretGroupView from './SecretGroupView'
 
 // type GroupDetailsProps = {
 //   dispatch: () => any
@@ -173,7 +173,7 @@ class SecretMessageDetails extends React.Component {
 
           <View style={Styles.row}>
             <Text style={Styles.rowLabel}>Message Group</Text>
-            <MessageGroupView />
+            <SecretGroupView />
           </View>
 
           <View style={[Styles.loginRow]}>
