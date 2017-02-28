@@ -14,7 +14,7 @@
  import Auth0Lock from 'react-native-lock'
  import styles from './Styles/PresentationScreenStyle'
  import { Images } from '../Themes'
- import credentials from './Config/AuthOCredentials.js'
+ import credentials from '../Config/Auth0Credentials.js'
 
  class WelcomeView extends Component {
 

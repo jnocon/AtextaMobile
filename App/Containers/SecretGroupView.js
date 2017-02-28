@@ -12,7 +12,7 @@ import AlertMessage from '../Components/AlertMessage'
 // Styles
 import styles from './Styles/ListviewGridExampleStyle'
 
-class MessageGroupView extends React.Component {
+class SecretGroupView extends React.Component {
 
   state: {
     dataSource: Object
@@ -42,7 +42,7 @@ class MessageGroupView extends React.Component {
 
     // Datasource is always in state
     this.state = {
-      dataSource: ds.cloneWithRows(this.props.message.length > 0 ? this.props.message : this.props.secret)
+      dataSource: ds.cloneWithRows(this.props.message)
     }
   }
 
@@ -57,7 +57,7 @@ class MessageGroupView extends React.Component {
   renderRow (rowData) {
     return (
         <View style={styles.row}>
-          <Text style={styles.boldLabel}>{rowData.groupName}</Text>
+          <Text style={styles.boldLabel}>{rowData.GroupName}</Text>
           <Text style={styles.label}>{rowData.mediumType}</Text>
         </View>
     )
@@ -111,19 +111,13 @@ class MessageGroupView extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-  let messageArr = [state.message.message]
-  if (!state.message.message) {
+  let messageArr = [state.secret.message]
+  if (!state.secret.message) {
     messageArr = []
   } 
-
-  let secretArr = [state.secret.message]
-  if (!state.secret.message) {
-    secretArr = []
-  } 
   return {
-    message: messageArr,
-    secret: secretArr
+    message: messageArr
   }
 }
 
-export default connect(mapStateToProps)(MessageGroupView)
+export default connect(mapStateToProps)(SecretGroupView)
