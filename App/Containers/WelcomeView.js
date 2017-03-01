@@ -32,7 +32,7 @@
        context.getUserId(token.accessToken)
     .then(result => result.json())
     .then(result => {
-      console.log('result from auth is', result.userSecrets)
+      console.log('result from auth is', token.accessToken)
       console.log(this.props)
       this.props.setUserData(result.userId, result.userCommands, result.userGroups, result.userSecrets, result.token, true)
     })
