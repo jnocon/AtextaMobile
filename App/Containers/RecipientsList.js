@@ -5,8 +5,6 @@ import { View, Text, ListView, TouchableOpacity } from 'react-native'
 import { connect } from 'react-redux'
 import RoundedButton from '../Components/RoundedButton'
 import { Actions as NavigationActions } from 'react-native-router-flux'
-// For empty lists
-import AlertMessage from '../Components/AlertMessage'
 import RecipDetailActions from '../Redux/RecipDetailRedux'
 // Styles
 import styles from './Styles/ListviewExampleStyle'

@@ -7,9 +7,6 @@ import RoundedButton from '../Components/RoundedButton'
 import { Actions as NavigationActions } from 'react-native-router-flux'
 import MessageDetailActions from '../Redux/MessageDetailRedux'
 
-// For empty lists
-import AlertMessage from '../Components/AlertMessage'
-
 // Styles
 import styles from './Styles/ListviewExampleStyle'
 

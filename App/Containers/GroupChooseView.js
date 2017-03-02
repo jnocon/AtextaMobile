@@ -8,9 +8,6 @@ import MessageDetailActions from '../Redux/MessageDetailRedux'
 import LoginActions from '../Redux/AuthRedux'
 import Immutable from 'seamless-immutable'
 
-// For empty lists
-import AlertMessage from '../Components/AlertMessage'
-
 // Styles
 import styles from './Styles/ListviewGridExampleStyle'
 
