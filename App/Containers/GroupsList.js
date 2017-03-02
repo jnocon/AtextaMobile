@@ -9,7 +9,6 @@ import GroupDetailActions from '../Redux/GroupDetailRedux'
 import RecipArrActions from '../Redux/RecipArrRedux'
 
 // For empty lists
-import AlertMessage from '../Components/AlertMessage'
 
 // Styles
 import styles from './Styles/ListviewGridExampleStyle'
@@ -118,7 +117,6 @@ class GroupsList extends React.Component {
   render () {
     return (
       <View style={styles.container}>
-        <AlertMessage title='Click The Button Below to Create a group!' show={this.noRowData()} />
         <ListView
           contentContainerStyle={styles.listContent}
           dataSource={this.state.dataSource}

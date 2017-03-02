@@ -6,8 +6,6 @@ import { connect } from 'react-redux'
 import RoundedButton from '../Components/RoundedButton'
 import { Actions as NavigationActions } from 'react-native-router-flux'
 
-// For empty lists
-import AlertMessage from '../Components/AlertMessage'
 
 // Styles
 import styles from './Styles/ListviewGridExampleStyle'
@@ -42,7 +40,7 @@ class MessageGroupView extends React.Component {
 
     // Datasource is always in state
     this.state = {
-      dataSource: ds.cloneWithRows(this.props.message.length > 0 ? this.props.message : this.props.secret)
+      dataSource: ds.cloneWithRows(this.props.message)
     }
   }
 
@@ -115,14 +113,8 @@ const mapStateToProps = (state) => {
   if (!state.message.message) {
     messageArr = []
   } 
-
-  let secretArr = [state.secret.message]
-  if (!state.secret.message) {
-    secretArr = []
-  } 
   return {
-    message: messageArr,
-    secret: secretArr
+    message: messageArr
   }
 }
 

@@ -57,7 +57,7 @@ fastlane/screenshots
 ios/Pods
 
 #Config
-App/Config/AuthOCredentials
+App/Config/Auth0Credentials
 
 # Logs
 logs
