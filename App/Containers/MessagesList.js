@@ -129,6 +129,13 @@ class MessagesList extends React.Component {
         dataSource: this.state.dataSource.cloneWithRowsAndSections(newProps.messages)
       })
     }
+
+    // if (this.props.updater) {
+    //   this.setState({
+    //     dataSource: this.state.dataSource.cloneWithRowsAndSections(newProps.messages)
+    //   })
+    //   this.props.update(false)
+    // }
   }
   // Used for friendly AlertMessage
   // returns true if the dataSource is empty
@@ -202,13 +209,15 @@ const mapStateToProps = (state) => {
 
   console.log('data in reducerMesssages= ', data)
   return {
-    messages: data
+    messages: data,
+    updater: state.message.update ? state.message.update : false
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    setMessage: (message) => dispatch(MessageDetailActions.setMessage(message))
+    setMessage: (message) => dispatch(MessageDetailActions.setMessage(message)),
+    update: (update) => dispatch(MessageDetailActions.update(update))
   }
 }
 

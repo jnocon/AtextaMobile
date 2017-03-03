@@ -200,7 +200,7 @@ class SecretMessageDetails extends React.Component {
         .then(result => {
           console.log('newMessage =', result)
           var messages = Immutable.asMutable(context.props.messagesArr, {deep: true})
-          result.name = result.name
+          result.name = this.state.newName ? this.state.newName.name : this.state.firstChoice.name
           result.mediumType = this.props.message.mediumType
           result.text = this.state.messageText
           messages.push(result)

@@ -105,6 +105,9 @@ class SecretMessagesList extends React.Component {
       <TouchableOpacity onPress={() => this.clickMessage(rowData)} style={styles.row}>
         <Text style={styles.boldLabel}>{sectionID} - {rowData.name}</Text>
         <Text style={styles.label}>{rowData.text}</Text>
+        {!rowData.verified
+          ? <Text style={styles.label}>Not Verified</Text>
+          : <Text style={styles.label}>Verified</Text> }
       </TouchableOpacity>
     )
   }
@@ -121,10 +124,12 @@ class SecretMessagesList extends React.Component {
 
   *************************************************************/
   componentWillReceiveProps (newProps) {
-    console.log('newProps in messages List = ', newProps)
-    this.setState({
-      dataSource: this.state.dataSource.cloneWithRowsAndSections(newProps.messages)
-    })
+    if (newProps.messages.Texts.length !== this.props.messages.Texts.length || newProps.messages.Emails.length !== this.props.messages.Emails.length || newProps.messages.Blank.length !== this.props.messages.Blank.length) {
+      console.log('newProps in messages List = ', this.props)
+      this.setState({
+        dataSource: this.state.dataSource.cloneWithRowsAndSections(newProps.messages)
+      })
+    }
   }
   // Used for friendly AlertMessage
   // returns true if the dataSource is empty
@@ -191,18 +196,9 @@ const mapStateToProps = (state) => {
     }
   }
   let data = {}
-  if (textArr.length !== 0) {
-    data.Texts = textArr
-  }
-  if (emailArr.length !== 0) {
-    data.Emails = emailArr
-  }
-  if (slackArr.length !== 0) {
-    data.Slacks = slackArr
-  }
-  if (blankArr.length !== 0) {
-    data.Blank = blankArr
-  }
+  data.Texts = textArr
+  data.Emails = emailArr
+  data.Blank = blankArr
 
   console.log('data in reducerMesssages= ', data)
   return {

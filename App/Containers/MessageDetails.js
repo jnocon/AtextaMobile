@@ -16,6 +16,7 @@ import {Metrics} from '../Themes'
 import { Actions as NavigationActions } from 'react-native-router-flux'
 import MessageGroupView from './MessageGroupView'
 import LoginActions from '../Redux/AuthRedux'
+import MessageDetailActions from '../Redux/MessageDetailRedux'
 import Immutable from 'seamless-immutable'
 
 // type GroupDetailsProps = {
@@ -105,6 +106,7 @@ class MessageDetails extends React.Component {
             }
           })
           context.props.updateMessageArr(messages)
+          this.props.update(true)
         })
         .catch(error => {
           console.log('error in update messsageName = ', error)
@@ -129,6 +131,7 @@ class MessageDetails extends React.Component {
             }
           })
           context.props.updateMessageArr(messages)
+          this.props.update(true)
         })
         .catch(error => {
           console.log('error in update messsageText = ', error)
@@ -153,6 +156,7 @@ class MessageDetails extends React.Component {
           result.text = this.state.messageText
           messages.push(result)
           this.props.updateMessageArr(messages)
+          this.props.update(true)
         })
       }
     } else {
@@ -172,6 +176,7 @@ class MessageDetails extends React.Component {
           result.text = this.state.messageText
           messages.push(result)
           this.props.updateMessageArr(messages)
+          this.props.update(true)
         })
     }
 
@@ -339,7 +344,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    updateMessageArr: (messageArr) => dispatch(LoginActions.updateMessageArr(messageArr))
+    updateMessageArr: (messageArr) => dispatch(LoginActions.updateMessageArr(messageArr)),
+    update: (update) => dispatch(MessageDetailActions.update(update))
   }
 }
 
