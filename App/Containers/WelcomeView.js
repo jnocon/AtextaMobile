@@ -10,6 +10,7 @@
 
  import { connect } from 'react-redux'
  import LoginActions from '../Redux/AuthRedux'
+ import SecretDetailActions from '../Redux/SecretDetailRedux'
 
  import Auth0Lock from 'react-native-lock'
  import styles from './Styles/PresentationScreenStyle'
@@ -34,6 +35,7 @@
     .then(result => {
       console.log('result from auth is', token.accessToken)
       console.log(this.props)
+      this.props.setChoices([])
       this.props.setUserData(result.userId, result.userCommands, result.userGroups, result.userSecrets, result.token, true)
     })
     .catch(error => {
@@ -123,7 +125,8 @@
 
  const mapDispatchToProps = (dispatch) => {
    return {
-     setUserData: (userId, messages, groups, secretMessages, token, loggedIn) => dispatch(LoginActions.setUserData(userId, messages, groups, secretMessages, token, loggedIn))
+     setUserData: (userId, messages, groups, secretMessages, token, loggedIn) => dispatch(LoginActions.setUserData(userId, messages, groups, secretMessages, token, loggedIn)),
+     setChoices: (messageChoices) => dispatch(SecretDetailActions.setChoices(messageChoices))
    }
  }
 

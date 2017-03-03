@@ -33,19 +33,9 @@ class DrawerContent extends Component {
     NavigationActions.groupsList()
   }
 
-  handlePressAPI = () => {
+  handlePressSecretMessages = () => {
     this.toggleDrawer()
-    NavigationActions.apiTesting()
-  }
-
-  handlePressTheme = () => {
-    this.toggleDrawer()
-    NavigationActions.theme()
-  }
-
-  handlePressDevice = () => {
-    this.toggleDrawer()
-    NavigationActions.usageExamples()
+    NavigationActions.secretMessagesList()
   }
 
   render () {
@@ -54,9 +44,7 @@ class DrawerContent extends Component {
         <Image source={Images.logo} style={styles.logo} />
         <DrawerButton text='Messages' onPress={this.handlePressMessages} />
         <DrawerButton text='Groups' onPress={this.handlePressGroups} />
-        <DrawerButton text='API Testing' onPress={this.handlePressAPI} />
-        <DrawerButton text='Themes' onPress={this.handlePressTheme} />
-        <DrawerButton text='Device Info' onPress={this.handlePressDevice} />
+        <DrawerButton text='Secret Messages' onPress={this.handlePressSecretMessages} />
       </ScrollView>
     )
   }

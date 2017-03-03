@@ -18,6 +18,7 @@ import SecretMessageDetails from '../Containers/SecretMessageDetails'
 import GroupChooseView from '../Containers/GroupChooseView'
 import AddressBook from '../Containers/AddressBook'
 import SecretMessagesList from '../Containers/SecretMessagesList'
+import SecretGroupChooseView from '../Containers/SecretGroupChooseView'
 
 /* **************************
 * Documentation: https://github.com/aksonov/react-native-router-flux
@@ -37,6 +38,7 @@ export default class NavigationRouter extends Component {
             <Scene key='messageDetails' component={MessageDetails} title='Message Details' />
             <Scene key='secretMessageDetails' component={SecretMessageDetails} title='Secret Message Details' />
             <Scene key='groupChooseView' component={GroupChooseView} title='Choose Group' />
+            <Scene key='secretGroupChooseView' component={SecretGroupChooseView} title='Choose Secret Group' />
             <Scene key='addressBook' component={AddressBook} title='Address Book' />
             <Scene key='secretMessagesList' component={SecretMessagesList} title='Secret Messages' />
           </Scene>
