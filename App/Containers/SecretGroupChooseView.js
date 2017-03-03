@@ -4,7 +4,6 @@ import { connect } from 'react-redux'
 import RoundedButton from '../Components/RoundedButton'
 import { Actions as NavigationActions } from 'react-native-router-flux'
 import GroupDetailActions from '../Redux/GroupDetailRedux'
-import MessageDetailActions from '../Redux/MessageDetailRedux'
 import SecretDetailActions from '../Redux/SecretDetailRedux'
 import LoginActions from '../Redux/AuthRedux'
 import Immutable from 'seamless-immutable'
@@ -12,7 +11,7 @@ import Immutable from 'seamless-immutable'
 // Styles
 import styles from './Styles/ListviewGridExampleStyle'
 
-class GroupChooseView extends React.Component {
+class SecretGroupChooseView extends React.Component {
 
   state: {
     dataSource: Object
@@ -95,43 +94,42 @@ class GroupChooseView extends React.Component {
       this.updateMessageGroup(newMessage.id, group.groupId)
       .then(result => result)
       .then(result => {
-        console.log("hi jesse= ", group, newMessage)
+        console.log('hi jesse= ', group, newMessage)
         newMessage.groupId = group.groupId
-        newMessage.groupName = group.name
+        newMessage.GroupName = group.name
         newMessage.mediumType = group.mediumType
         console.log('whats good dude =', newMessage)
         this.props.setMessage(newMessage)
         let messages = Immutable.asMutable(this.props.messagesArr, {deep: true})
         messages.forEach(message => {
-        if (message.id === newMessage.id) {
+          if (message.id === newMessage.id) {
             message.groupId = group.groupId
-            message.groupName = group.name
+            message.GroupName = group.name
             message.mediumType = group.mediumType
-            }
-          })
-        this.props.updateMessageArr(messages)
+          }
+        })
+        this.props.updateSecretArr(messages)
         NavigationActions.pop()
       })
       .catch(error => {
         console.log('error in choose new group for message = ', error)
-      }) 
+      })
     } else {
       let messageGroup = {
+        name: undefined,
+        text: undefined,
+        speech: undefined,
         groupId: group.groupId,
-        groupName: group.name,
         GroupName: group.name,
         mediumType: group.mediumType
       }
       this.props.setMessage(messageGroup)
-      this.props.setSecret(messageGroup)
       NavigationActions.pop()
     }
-      
-      
-    }
+  }
 
   updateMessageGroup (messageId, newGroupId) {
-    return fetch('http://192.168.1.227:3000/command/updateGroup/', {
+    return fetch('http://192.168.1.227:3000/secretCommand/updateGroup/', {
       method: 'PUT',
       headers: {
         'Accept': 'application/json',
@@ -144,7 +142,7 @@ class GroupChooseView extends React.Component {
       })
     })
   }
-  
+
   createNewGroup () {
     this.props.setGroup(undefined)
     NavigationActions.groupDetails()
@@ -170,8 +168,8 @@ class GroupChooseView extends React.Component {
 const mapStateToProps = (state) => {
   return {
     groups: state.login.groups,
-    message: state.message.message,
-    messagesArr: state.login.messages,
+    message: state.secret.message,
+    messagesArr: state.login.secretMessages,
     token: state.login.token
   }
 }
@@ -179,10 +177,9 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     setGroup: (group) => dispatch(GroupDetailActions.setGroup(group)),
-    setMessage: (message) => dispatch(MessageDetailActions.setMessage(message)),
-    setSecret: (message) => dispatch(SecretDetailActions.setMessage(message)),
-    updateMessageArr: (messageArr) => dispatch(LoginActions.updateMessageArr(messageArr))
+    setMessage: (message) => dispatch(SecretDetailActions.setMessage(message)),
+    updateSecretArr: (secretArr) => dispatch(LoginActions.updateSecretArr(secretArr))
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(GroupChooseView)
+export default connect(mapStateToProps, mapDispatchToProps)(SecretGroupChooseView)

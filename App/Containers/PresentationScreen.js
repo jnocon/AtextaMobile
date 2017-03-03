@@ -21,7 +21,7 @@ export default class PresentationScreen extends React.Component {
 
           <View style={styles.section} >
             <Text style={styles.sectionText} >
-              Click either messages or groups to get started or tutorial for an step by step guide.
+              Click a button below to customize your messages, groups and secret messages
             </Text>
           </View>
 

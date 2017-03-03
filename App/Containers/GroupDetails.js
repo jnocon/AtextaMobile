@@ -305,7 +305,7 @@ class GroupDetails extends React.Component {
       <ScrollView contentContainerStyle={{justifyContent: 'center'}} style={[Styles.container, {height: this.state.visibleHeight}]} keyboardShouldPersistTaps='always'>
         <View style={Styles.form}>
           <View style={Styles.row}>
-            <Text style={Styles.rowLabel}>{I18n.t('GroupName')}</Text>
+            <Text style={Styles.rowLabel}>Group Name</Text>
             <TextInput
               ref='groupName'
               style={textInputStyle}
@@ -323,20 +323,19 @@ class GroupDetails extends React.Component {
 
           {this.props.group
             ? <View style={Styles.row}>
-              <Text style={Styles.rowLabel}>{I18n.t('Method')}</Text>
+              <Text style={Styles.rowLabel}>Message Medium</Text>
               <Text style={Styles.textInput}>
                 {mediumType}
               </Text>
             </View>
 
             : <View style={Styles.row}>
-              <Text style={Styles.rowLabel}>Medium Type</Text>
+              <Text style={Styles.rowLabel}>Message Medium</Text>
               <Picker
                 selectedValue={this.state.mediumType}
                 onValueChange={(value) => this.setState({mediumType: value})}>
                 <Picker.Item label='Text Message' value='T' />
                 <Picker.Item label='Email' value='E' />
-                <Picker.Item label='Slack' value='S' />
               </Picker>
             </View>}
 
@@ -348,7 +347,7 @@ class GroupDetails extends React.Component {
           <View style={[Styles.loginRow]}>
             <TouchableOpacity style={Styles.loginButtonWrapper} onPress={this.handleSaveDetails}>
               <View style={Styles.loginButton}>
-                <Text style={Styles.loginText}>{I18n.t('SaveGroup')}</Text>
+                <Text style={Styles.loginText}>Save Group</Text>
               </View>
             </TouchableOpacity>
           </View>

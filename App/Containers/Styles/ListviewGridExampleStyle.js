@@ -16,7 +16,7 @@ export default StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     margin: Metrics.baseMargin,
-    backgroundColor: Colors.teal,
+    backgroundColor: Colors.snow,
     borderRadius: 50,
     shadowColor: '#fffaf0',
     shadowOpacity: 0.2,
@@ -30,13 +30,13 @@ export default StyleSheet.create({
   boldLabel: {
     fontWeight: 'bold',
     alignSelf: 'center',
-    color: Colors.snow,
+    color: Colors.panther,
     textAlign: 'center',
     marginBottom: Metrics.smallMargin
   },
   label: {
     alignSelf: 'center',
-    color: Colors.snow,
+    color: Colors.panther,
     textAlign: 'center'
   },
   listContent: {

@@ -53,7 +53,7 @@ class SecretGroupView extends React.Component {
   *************************************************************/
   renderRow (rowData) {
     return (
-        <View style={styles.row}>
+      <View style={styles.row}>
           <Text style={styles.boldLabel}>{rowData.GroupName}</Text>
           <Text style={styles.label}>{rowData.mediumType}</Text>
         </View>
@@ -77,13 +77,13 @@ class SecretGroupView extends React.Component {
       }
     }
   *************************************************************/
- componentWillReceiveProps (newProps) {
-      if (newProps.message) {
+  componentWillReceiveProps (newProps) {
+   if (newProps.message) {
         this.setState({
           dataSource: this.state.dataSource.cloneWithRows(newProps.message)
         })
       }
-    }
+ }
   // Used for friendly AlertMessage
   // returns true if the dataSource is empty
   noRowData () {
@@ -99,9 +99,10 @@ class SecretGroupView extends React.Component {
           renderRow={this.renderRow}
           pageSize={15}
         />
-        <RoundedButton onPress={NavigationActions.groupChooseView}>
+        <RoundedButton onPress={NavigationActions.secretGroupChooseView}>
            Choose Group
         </RoundedButton>
+
       </View>
     )
   }
@@ -111,7 +112,7 @@ const mapStateToProps = (state) => {
   let messageArr = [state.secret.message]
   if (!state.secret.message) {
     messageArr = []
-  } 
+  }
   return {
     message: messageArr
   }

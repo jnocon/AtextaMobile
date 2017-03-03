@@ -103,7 +103,7 @@ class SecretMessagesList extends React.Component {
     // in different sections
     return (
       <TouchableOpacity onPress={() => this.clickMessage(rowData)} style={styles.row}>
-        <Text style={styles.boldLabel}>{sectionID} - {rowData.commandName}</Text>
+        <Text style={styles.boldLabel}>{sectionID} - {rowData.name}</Text>
         <Text style={styles.label}>{rowData.text}</Text>
       </TouchableOpacity>
     )
@@ -140,13 +140,13 @@ class SecretMessagesList extends React.Component {
   renderHeader (data, sectionID) {
     switch (sectionID) {
       case 'Texts':
-        return <Text style={styles.boldLabel}>Texts</Text>
+        return <Text style={styles.sectionLabel}>Texts</Text>
       case 'Emails':
-        return <Text style={styles.boldLabel}>Emails</Text>
+        return <Text style={styles.sectionLabel}>Emails</Text>
       case 'Slacks':
-        return <Text style={styles.boldLabel}>Slack</Text>
+        return <Text style={styles.sectionLabel}>Slack</Text>
       default:
-        return <Text style={styles.boldLabel}>Miscellaneous</Text>
+        return <Text style={styles.sectionLabel}>Miscellaneous</Text>
     }
   }
 

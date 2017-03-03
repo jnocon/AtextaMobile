@@ -8,6 +8,7 @@ export default StyleSheet.create({
   logo: {
     height: Metrics.images.logo,
     width: Metrics.images.logo,
+    marginTop: 20,
     resizeMode: 'cover'
   },
   centered: {

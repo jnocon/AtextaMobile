@@ -10,6 +10,7 @@ const { Types, Creators } = createActions({
   setUserData: ['userId', 'messages', 'groups', 'secretMessages', 'token', 'loggedIn'],
   updateMessageArr: ['messages'],
   updateGroupArr: ['groups'],
+  updateSecretArr: ['secretMessages'],
   logout: null
 })
 
@@ -39,6 +40,9 @@ export const updateMessageArr = (state: Object, { messages }: Object) =>
 export const updateGroupArr = (state: Object, { groups }: Object) =>
   state.merge({groups})
 
+export const updateSecretArr = (state: Object, { secretMessages }: Object) =>
+  state.merge({secretMessages})
+
 // we've logged out
 export const logout = (state: Object) => INITIAL_STATE
 
@@ -48,6 +52,7 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.SET_USER_DATA]: setUserData,
   [Types.UPDATE_MESSAGE_ARR]: updateMessageArr,
   [Types.UPDATE_GROUP_ARR]: updateGroupArr,
+  [Types.UPDATE_SECRET_ARR]: updateSecretArr,
   [Types.LOGOUT]: logout
 })
 
